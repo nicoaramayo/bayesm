@@ -1,4 +1,4 @@
-useDynLib(bayesm)
+useDynLib(bayesnico)
 importFrom(Rcpp, evalCpp)
 importFrom(utils, flush.console)
 importFrom(stats, acf, cov, dnbinom, dnorm, lm, median, optim, pnorm, qchisq, quantile, rmultinom, rnorm, runif, var)
@@ -14,16 +14,16 @@ rmvpGibbs,rhierLinearModel,rhierMnlRwMixture,rivGibbs,
 rmnlIndepMetrop,rscaleUsage,ghkvec,condMom,logMargDenNR,
 rhierBinLogit,rnegbinRw,rhierNegbinRw,rbiNormGibbs,clusterMix,rsurGibbs,
 mixDenBi,mnpProb,rhierLinearMixture,
-summary.bayesm.mat,summary.bayesm.nmix,summary.bayesm.var,
-plot.bayesm.mat,plot.bayesm.hcoef,plot.bayesm.nmix,
+summary.bayesnico.mat,summary.bayesnico.nmix,summary.bayesnico.var,
+plot.bayesnico.mat,plot.bayesnico.hcoef,plot.bayesnico.nmix,
 rordprobitGibbs,rivGibbs,rivDP,rDPGibbs,
 rhierMnlDP,cgetC,rbayesBLP)
 
 
 ## register S3 methods
-S3method(plot, bayesm.mat)
-S3method(plot, bayesm.nmix)
-S3method(plot, bayesm.hcoef)
-S3method(summary, bayesm.mat)
-S3method(summary, bayesm.var)
-S3method(summary, bayesm.nmix)
+S3method(plot, bayesnico.mat)
+S3method(plot, bayesnico.nmix)
+S3method(plot, bayesnico.hcoef)
+S3method(summary, bayesnico.mat)
+S3method(summary, bayesnico.var)
+S3method(summary, bayesnico.nmix)
