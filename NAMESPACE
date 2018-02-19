@@ -1,4 +1,4 @@
-useDynLib(bayesnico)
+useDynLib(bayesm)
 importFrom(Rcpp, evalCpp)
 importFrom(utils, flush.console)
 importFrom(stats, acf, cov, dnbinom, dnorm, lm, median, optim, pnorm, qchisq, quantile, rmultinom, rnorm, runif, var)
