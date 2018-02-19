@@ -21,9 +21,9 @@ rhierMnlDP,cgetC,rbayesBLP)
 
 
 ## register S3 methods
-S3method(plot, bayesnico.mat)
-S3method(plot, bayesnico.nmix)
-S3method(plot, bayesnico.hcoef)
-S3method(summary, bayesnico.mat)
-S3method(summary, bayesnico.var)
-S3method(summary, bayesnico.nmix)
+S3method(plot, bayesm.mat)
+S3method(plot, bayesm.nmix)
+S3method(plot, bayesm.hcoef)
+S3method(summary, bayesm.mat)
+S3method(summary, bayesm.var)
+S3method(summary, bayesm.nmix)
