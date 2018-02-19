@@ -131,6 +131,6 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   if(nprint>0) endMcmcTimer();
       
   return List::create(
-    Named("betadraw") = betadraw, 
+    Named("betadrawww") = betadraw, 
     Named("sigmadraw") = sigmadraw);
 }
