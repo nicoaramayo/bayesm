@@ -1,36 +1,47 @@
 #include "bayesm.h"
-  
+ 
+//EDITED FOR MULTIVARIATE ORDERED PROBIT GIBBS SAMPLER -------------------------------------
+
 //EXTRA FUNCTIONS SPECIFIC TO THE MAIN FUNCTION--------------------------------------------
-vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y){
-  
-//Wayne Taylor 9/8/2014
-  
-//function to draw w_i by Gibbing thru p vector
 
-  int above;
+vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
+                  mat const& X, vec const& betahat){
+  //function to draw w_i as in the ordered probit model
+
+  int ny = y.size();
+  
+  vec beta = betahat;
+  
   vec outwi = w;
-
-	for(int i = 0; i<p; i++){	
-    if (y[i]){
-			above = 0;
-	  } else { 
-			above = 1;
-	  }
   
-  vec CMout = condmom(outwi,mu,sigmai,p,i+1);
-  // outwi[i] = rtrun1(CMout[0],CMout[1],0.0,above);
-  outwi[i] = trunNorm(CMout[0],CMout[1],0.0,above);
+  for(int i = 0; i<ny; i++){	
+	  
+	  if (i<1 && y[i]<100){
+		// if it's i's first observed response, sample from a positive truncated normal
+	  	vec CMout = condmom(outwi, mu, sigmai, p, i+1);
+	  	outwi[i] = trunNorm(Cmout[0], Cmout[1], 0.0, 0);
+		  
+	  } else if (y[i]<100){
+	  	// if it's one of i's observed responses, sample from a truncated normal by 0 and the last w draw
+          	outwi[i] = rtrunVec(X*beta, sigma, outwi[i-1], 0.0);
+		  
+	  } else {
+		// if it's a non-selected choice, sample from a negative truncated normal
+	 	vec CMout = condmom(outwi, mu, sigmai, p, i+1);
+	  	outwi[i] = trunNorm(Cmout[0], Cmout[1], 0.0, 1);	
+	  }
+		
   }
-
+  
   return (outwi);
 }
 
-vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec const& y){
-  
-// Wayne Taylor 9/8/2014
-  
-//function to gibbs down entire w vector for all n obs
 
+vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec const& y,
+                 mat const& X, vec const& betahat){
+
+  //function to draw all w vector for all n obs
+  
   int p = sigmai.n_cols;
   int n = w.size()/p;
   int ind; 
@@ -38,9 +49,10 @@ vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec const& y){
   
   for(int i = 0; i<n; i++){
     ind = p*i;
-		outw.subvec(ind,ind+p-1) = drawwi_mvp(w.subvec(ind,ind+p-1),mu.subvec(ind,ind+p-1),sigmai,p,y.subvec(ind,ind+p-1));
-	}
-
+    outw.subvec(ind,ind+p-1) = drawwi_mvordp(w.subvec(ind,ind+p-1),mu.subvec(ind,ind+p-1),sigmai,p,y.subvec(ind,ind+p-1),
+                X, betahat);
+  }
+  
   return (outw);
 }
 
@@ -49,8 +61,7 @@ vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec const& y){
 List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p, 
                          ivec const& y, mat const& X, vec const& beta0, mat const& sigma0, 
                          mat const& V, double nu, vec const& betabar, mat const& A) {
-                           
-// Wayne Taylor 9/24/2014
+                       
 
   int n = y.size()/p;
   int k = X.n_cols;
@@ -88,7 +99,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       //   beta is k x 1 vector
       //   sigmai is (p-1) x (p-1) 
           
-      wnew = draww_mvp(wold,X*betaold,sigmai,y);
+      wnew = draww_mvp(wold,X*betaold,sigmai,y,X,betahat);
   
       //draw beta given w(rep) and sigma(rep-1)
       //  note:  if Sigma^-1 (G) = C'C then Var(Ce)=CSigmaC' = I
@@ -131,6 +142,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   if(nprint>0) endMcmcTimer();
       
   return List::create(
-    Named("betadrawww") = betadraw, 
-    Named("sigmadraw") = sigmadraw);
+    Named("betadraw") = betadraw, 
+    Named("sigmadraw") = sigmadraw,
+    Named("wdraw") = wnew);
 }
