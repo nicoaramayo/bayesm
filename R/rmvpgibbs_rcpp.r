@@ -1,5 +1,7 @@
 rmvpGibbs=function(Data,Prior,Mcmc){
 #
+# --------- EDITED TO COMPUTE THE MULTIVARIATE ORDERED PROBIT ---------------
+ 
 # Revision History:
 #   modified by rossi 12/18/04 to include error checking
 #   3/07 added classes
@@ -46,13 +48,13 @@ X=Data$X
 #
 # check data for validity
 #
-levely=as.numeric(levels(as.factor(y)))
-bady=FALSE
-for (i in 0:1) 
-{ if(levely[i+1] != i) {bady=TRUE} }
-cat("Table of y values",fill=TRUE)
+#levely=as.numeric(levels(as.factor(y)))
+#bady=FALSE
+#for (i in 0:1) 
+#{ if(levely[i+1] != i) {bady=TRUE} }
+#cat("Table of y values",fill=TRUE)
 print(table(y))
-if (bady) {pandterm("Invalid y")}
+#if (bady) {pandterm("Invalid y")}
 if (length(y)%%p !=0) {pandterm("length of y is not a multiple of p")}
 n=length(y)/p
 k=ncol(X)
