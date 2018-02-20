@@ -23,7 +23,7 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
 		  
 	  } else if (y[i]<100){
 	  	// if it's one of i's observed responses, sample from a truncated normal by 0 and the last w draw
-          	outwi[i] = rtrunVec(X*beta, sigma, outwi[i-1], 0.0);
+          	outwi[i] = rtrunVec(X*beta, sigmai, outwi[i-1], 0.0);
 		  
 	  } else {
 		// if it's a non-selected choice, sample from a negative truncated normal
