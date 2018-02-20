@@ -13,8 +13,6 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
   vec beta = betahat;
   
   vec outwi = w;
-	
-  int b = 0;
   
   for(int i = 0; i<ny; i++){	
 	  
@@ -24,8 +22,10 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
 	  	outwi[i] = trunNorm(Cmout[0], Cmout[1], 0.0, 0);
 		  
 	  } else if (y[i]<100){
-	  	// if it's one of i's observed responses, sample from a truncated normal by 0 and the last w draw
-          	outwi[i] = rtrunVec(X*beta, sigmai, outwi[i-1], b);
+	  	// if it's one of i's observed responses, sample from a truncated normal by the last w draw
+                  vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
+		  outwi[i] = trunNorm(Cmout[0], Cmout[1], outwi[i-1], 0);
+		// while outwi[i] <0 repeat draw??
 		  
 	  } else {
 		// if it's a non-selected choice, sample from a negative truncated normal
