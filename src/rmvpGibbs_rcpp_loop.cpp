@@ -18,7 +18,7 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
 	  
 	  if (i<1 && y[i]<100){
 		// if it's i's first observed response, sample from a positive truncated normal
-	  	vec CMout = condmom(outwi, mu, sigmai, p, i+1);
+	  	vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
 	  	outwi[i] = trunNorm(Cmout[0], Cmout[1], 0.0, 0);
 		  
 	  } else if (y[i]<100){
@@ -27,7 +27,7 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
 		  
 	  } else {
 		// if it's a non-selected choice, sample from a negative truncated normal
-	 	vec CMout = condmom(outwi, mu, sigmai, p, i+1);
+	 	vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
 	  	outwi[i] = trunNorm(Cmout[0], Cmout[1], 0.0, 1);	
 	  }
 		
