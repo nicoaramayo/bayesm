@@ -99,7 +99,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       //   beta is k x 1 vector
       //   sigmai is (p-1) x (p-1) 
           
-      wnew = draww_mvp(wold,X*betaold,sigmai,y,X,betahat);
+      wnew = draww_mvp(wold,X*betaold,sigmai,y,X,betabar);
   
       //draw beta given w(rep) and sigma(rep-1)
       //  note:  if Sigma^-1 (G) = C'C then Var(Ce)=CSigmaC' = I
