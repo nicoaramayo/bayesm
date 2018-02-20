@@ -49,7 +49,7 @@ vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec const& y,
   
   for(int i = 0; i<n; i++){
     ind = p*i;
-    outw.subvec(ind,ind+p-1) = drawwi_mvordp(w.subvec(ind,ind+p-1),mu.subvec(ind,ind+p-1),sigmai,p,y.subvec(ind,ind+p-1),
+    outw.subvec(ind,ind+p-1) = drawwi_mvp(w.subvec(ind,ind+p-1),mu.subvec(ind,ind+p-1),sigmai,p,y.subvec(ind,ind+p-1),
                 X, betahat);
   }
   
