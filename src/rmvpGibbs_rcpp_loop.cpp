@@ -25,6 +25,14 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
 	  	// if it's one of i's observed responses, sample from a truncated normal by the last w draw
                   vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
 		  outwi[i] = trunNorm(Cmout[0], Cmout[1], outwi[i-1], 0);
+		  int b = 0;
+		  while(outwi[i] < 0){
+		  	outwi[i] = trunNorm(Cmout[0], Cmout[1], outwi[i-1], 0);
+			b++;
+			if(b>100){
+				printf("more than 100 draws for w[i]")
+			}
+		  }
 		// while outwi[i] <0 repeat draw??
 		  
 	  } else {
