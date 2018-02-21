@@ -30,7 +30,7 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
 		  	outwi[i] = trunNorm(Cmout[0], Cmout[1], outwi[i-1], 0);
 			b++;
 			if(b>100){
-				printf("more than 100 draws for w[i]")
+				printf("more than 100 draws for w[i]");
 			}
 		  }
 		// while outwi[i] <0 repeat draw??
