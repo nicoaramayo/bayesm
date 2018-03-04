@@ -21,17 +21,21 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
 		// y[i] = 100 is a default value for no choosing alternative i
 	  	vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
 	  	outwi[i] = trunNorm(Cmout[0], Cmout[1], 0.0, 0);
+		printf("utility from first response");
+		printf(outwi[i]);
 		  
 	  } else if (y[i]<100){
 	  	// if it's one of i's observed responses, sample from a truncated normal by the last w draw
                   vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
 		  outwi[i] = trunNorm(Cmout[0], Cmout[1], outwi[i-1], 1);
+		  printf("utility from other responses");
+		  printf(outwi[i]);
 		  int b = 0;
 		  // while outwi[i] <0 repeat draw
 		  while(outwi[i] < 0){
 		  	outwi[i] = trunNorm(Cmout[0], Cmout[1], outwi[i-1], 1);
 			b++;
-			if(b>50){
+			if(b == 50){
 			    	printf("more than 50 draws for w[i]");
 			}
 		  }
@@ -39,7 +43,9 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
 	  } else {
 		// if it's a non-selected choice, sample from a negative truncated normal
 	 	vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
-	  	outwi[i] = trunNorm(Cmout[0], Cmout[1], 0.0, 1);	
+	  	outwi[i] = trunNorm(Cmout[0], Cmout[1], 0.0, 1);
+		printf("utility from no response");
+		printf(outwi[i]);
 	  }
 		
   }
