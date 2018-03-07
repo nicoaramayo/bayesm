@@ -268,6 +268,27 @@ vec rtrunVec(vec const& mu,vec const& sigma, vec const& a, vec const& b){
   return(out);
 }
 
+// Draw an scalar value from a double-sided truncated normal distribution ---------------------------------------
+
+vec rtrunSc(vec const& mu,vec const& sigma, vec const& a, vec const& b){
+  
+// N. Aramayo  
+
+//function to draw from univariate truncated normal distribution
+//a the lower bound for truncation
+//b the upper bound for truncation
+
+  int n = mu.size();
+  vec FA(n);
+  vec FB(n);
+  vec out(n);
+  FA = R::pnorm((a-mu)/sigma,0,1,1,0);
+  FB = R::pnorm((b-mu)/sigma,0,1,1,0);
+  out = mu+sigma*R::qnorm(R::runif(0,1)*(FB-FA)+FA,0,1,1,0);
+  return(out);
+}
+
+
 //Used in rhierMnlDP and rhierMnlRwMixture------------------------------------------------------------------------
 mnlMetropOnceOut mnlMetropOnce(vec const& y, mat const& X, vec const& oldbeta, 
                                                  double oldll,double s, mat const& incroot, 
