@@ -17,24 +17,23 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
   for(int i = 0; i<ny; i++){	
 	  
 	  if (i<1 && y[i]<100){
-		// if it's i's first observed response, sample from a positive truncated normal
-		// y[i] = 100 is a default value for no choosing alternative i
+		// if it's i's first observed response, sample from a truncated normal from above the previous iteration draw of w_i
+		// y[i] = 100 is a default value for not choosing alternative i
 	  	vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
-	  	outwi[i] = trunNorm(Cmout[0], Cmout[1], 0.0, 0);
+	  	outwi[i] = trunNorm(Cmout[0], Cmout[1], outwi[i], 0);
+		  
+	  } else if (y[i]<100 && y[i+1]<100){
+	  	// if it's one of i's observed responses (and it's not the last observed response),
+		// sample from a truncated normal by the last w_i draw above and below from the previous iteration 
+		// draw of the following choice
+                  vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
+		  outwi[i] = rtrunSc(Cmout[0], Cmout[1], outwi[i-1], outwi[i+1]);
 		  
 	  } else if (y[i]<100){
-	  	// if it's one of i's observed responses, sample from a truncated normal by the last w draw
+	  	// if it's one of i's observed responses (and it's the last observed response),
+		// sample from a truncated normal by the last w_i draw above and below from 0
                   vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
-		  outwi[i] = trunNorm(Cmout[0], Cmout[1], outwi[i-1], 1);
-		  int b = 0;
-		  // while outwi[i] <0 repeat draw
-		  while(outwi[i] < 0){
-		  	outwi[i] = trunNorm(Cmout[0], Cmout[1], outwi[i-1], 1);
-			b++;
-			if(b == 50){
-			    	printf("more than 50 draws for w[i]");
-			}
-		  }
+		  outwi[i] = rtrunSc(Cmout[0], Cmout[1], outwi[i-1], 0.0);
 		  
 	  } else {
 		// if it's a non-selected choice, sample from a negative truncated normal
