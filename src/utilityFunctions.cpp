@@ -247,26 +247,14 @@ vec breg1(mat const& root, mat const& X, vec const& y, vec const& Abetabar) {
   return (cov*(trans(X)*y+Abetabar) + trans(root)*vec(rnorm(root.n_cols)));
 }
 
-vec rtrunVec(vec const& mu,vec const& sigma, vec const& a, vec const& b, int c){
+vec rtrunVec(vec const& mu,vec const& sigma, vec const& a, vec const& b){
   
-// Keunwoo Kim 06/20/2014  
+	// EDITED TO SAMPLE A SCALAR, NOT A VECTOR
 
 //function to draw from univariate truncated norm
 //a is vector of lower bounds for truncation
 //b is vector of upper bounds for truncation
-  if(c == 0){
-  int n = mu.size();
-  vec FA(n);
-  vec FB(n);
-  vec out(n);
-  for (int i=0; i<n; i++) {
-    FA[i] = R::pnorm((a[i]-mu[i])/sigma[i],0,1,1,0);
-    FB[i] = R::pnorm((b[i]-mu[i])/sigma[i],0,1,1,0);
-    out[i] = mu[i]+sigma[i]*R::qnorm(R::runif(0,1)*(FB[i]-FA[i])+FA[i],0,1,1,0);
-  }
 
-  return(out);
-  } else{
   int n = mu.size();
   vec FA(n);
   vec FB(n);
