@@ -247,7 +247,7 @@ vec breg1(mat const& root, mat const& X, vec const& y, vec const& Abetabar) {
   return (cov*(trans(X)*y+Abetabar) + trans(root)*vec(rnorm(root.n_cols)));
 }
 
-vec rtrunVec(double mu, double sigma, double a, double b){
+//vec rtrunVec(double mu, double sigma, double a, double b){
   
 	// EDITED TO SAMPLE A SCALAR, NOT A VECTOR
 
@@ -255,20 +255,20 @@ vec rtrunVec(double mu, double sigma, double a, double b){
 //a is vector of lower bounds for truncation
 //b is vector of upper bounds for truncation
 
-  int n = mu.size();
-  vec FA(n);
-  vec FB(n);
-  vec out(n);
-  FA = R::pnorm((a-mu)/sigma,0,1,1,0);
-  FB = R::pnorm((b-mu)/sigma,0,1,1,0);
-  out = mu+sigma*R::qnorm(R::runif(0,1)*(FB-FA)+FA,0,1,1,0);
-  return(out);
-  }
-}
+//  int n = mu.size();
+//  vec FA(n);
+//  vec FB(n);
+//  vec out(n);
+//  FA = R::pnorm((a-mu)/sigma,0,1,1,0);
+// FB = R::pnorm((b-mu)/sigma,0,1,1,0);
+//  out = mu+sigma*R::qnorm(R::runif(0,1)*(FB-FA)+FA,0,1,1,0);
+//  return(out);
+//  }
+//}
 
 // Draw an scalar value from a double-sided truncated normal distribution ---------------------------------------
 
-vec rtrunSc(vec const& mu,vec const& sigma, vec const& a, vec const& b){
+//vec rtrunSc(vec const& mu,vec const& sigma, vec const& a, vec const& b){
   
 // N. Aramayo  
 
@@ -276,15 +276,15 @@ vec rtrunSc(vec const& mu,vec const& sigma, vec const& a, vec const& b){
 //a the lower bound for truncation
 //b the upper bound for truncation
 
-  int n = mu.size();
-  vec FA(n);
-  vec FB(n);
-  vec out(n);
-  FA = R::pnorm((a-mu)/sigma,0,1,1,0);
-  FB = R::pnorm((b-mu)/sigma,0,1,1,0);
-  out = mu+sigma*R::qnorm(R::runif(0,1)*(FB-FA)+FA,0,1,1,0);
-  return(out);
-}
+//  int n = mu.size();
+//  vec FA(n);
+//  vec FB(n);
+//  vec out(n);
+//  FA = R::pnorm((a-mu)/sigma,0,1,1,0);
+//  FB = R::pnorm((b-mu)/sigma,0,1,1,0);
+//  out = mu+sigma*R::qnorm(R::runif(0,1)*(FB-FA)+FA,0,1,1,0);
+//  return(out);
+//}
 
 
 //Used in rhierMnlDP and rhierMnlRwMixture------------------------------------------------------------------------
