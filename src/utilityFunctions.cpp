@@ -247,14 +247,14 @@ vec breg1(mat const& root, mat const& X, vec const& y, vec const& Abetabar) {
   return (cov*(trans(X)*y+Abetabar) + trans(root)*vec(rnorm(root.n_cols)));
 }
 
-vec rtrunVec(vec const& mu,vec const& sigma, vec const& a, vec const& b){
+vec rtrunVec(vec const& mu,vec const& sigma, vec const& a, vec const& b, int const& c){
   
 // Keunwoo Kim 06/20/2014  
 
 //function to draw from univariate truncated norm
 //a is vector of lower bounds for truncation
 //b is vector of upper bounds for truncation
-
+  if(c == 0){
   int n = mu.size();
   vec FA(n);
   vec FB(n);
@@ -266,6 +266,16 @@ vec rtrunVec(vec const& mu,vec const& sigma, vec const& a, vec const& b){
   }
 
   return(out);
+  } else{
+  int n = mu.size();
+  vec FA(n);
+  vec FB(n);
+  vec out(n);
+  FA = R::pnorm((a-mu)/sigma,0,1,1,0);
+  FB = R::pnorm((b-mu)/sigma,0,1,1,0);
+  out = mu+sigma*R::qnorm(R::runif(0,1)*(FB-FA)+FA,0,1,1,0);
+  return(out);
+  }
 }
 
 // Draw an scalar value from a double-sided truncated normal distribution ---------------------------------------
