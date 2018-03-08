@@ -4,7 +4,7 @@
 
 //EXTRA FUNCTIONS SPECIFIC TO THE MAIN FUNCTION--------------------------------------------
 
-vec rtrunSc(double mu, double sigma, double a, double b){
+double rtrunSc(double mu, double sigma, double a, double b){
   
 // N. Aramayo  
 
