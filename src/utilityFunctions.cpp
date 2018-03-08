@@ -247,7 +247,7 @@ vec breg1(mat const& root, mat const& X, vec const& y, vec const& Abetabar) {
   return (cov*(trans(X)*y+Abetabar) + trans(root)*vec(rnorm(root.n_cols)));
 }
 
-vec rtrunVec(vec const& mu,vec const& sigma, vec const& a, vec const& b, int const& c){
+vec rtrunVec(vec const& mu,vec const& sigma, vec const& a, vec const& b, int c){
   
 // Keunwoo Kim 06/20/2014  
 
