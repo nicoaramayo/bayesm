@@ -247,7 +247,7 @@ vec breg1(mat const& root, mat const& X, vec const& y, vec const& Abetabar) {
   return (cov*(trans(X)*y+Abetabar) + trans(root)*vec(rnorm(root.n_cols)));
 }
 
-vec rtrunVec(vec const& mu,vec const& sigma, vec const& a, vec const& b){
+vec rtrunVec(double mu, double sigma, double a, double b){
   
 	// EDITED TO SAMPLE A SCALAR, NOT A VECTOR
 
