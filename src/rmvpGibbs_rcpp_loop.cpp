@@ -27,13 +27,15 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
 		// sample from a truncated normal by the last w_i draw above and below from the previous iteration 
 		// draw of the following choice
                   vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
-		  outwi[i] = rtrunSc(Cmout[0], Cmout[1], outwi[i-1], outwi[i+1]);
+		  //outwi[i] = rtrunSc(Cmout[0], Cmout[1], outwi[i-1], outwi[i+1]);
+		  outwi[i] = rtrunVec(Cmout[0], Cmout[1], outwi[i-1], outwi[i+1]);
 		  
 	  } else if (y[i]<100){
 	  	// if it's one of i's observed responses (and it's the last observed response),
 		// sample from a truncated normal by the last w_i draw above and below from 0
                   vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
-		  outwi[i] = rtrunSc(Cmout[0], Cmout[1], outwi[i-1], 0.0);
+		  //outwi[i] = rtrunSc(Cmout[0], Cmout[1], outwi[i-1], 0.0);
+		  outwi[i] = rtrunVec(Cmout[0], Cmout[1], outwi[i-1], 0.0);
 		  
 	  } else {
 		// if it's a non-selected choice, sample from a negative truncated normal
