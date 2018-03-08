@@ -4,6 +4,24 @@
 
 //EXTRA FUNCTIONS SPECIFIC TO THE MAIN FUNCTION--------------------------------------------
 
+vec rtrunSc(double mu, double sigma, double a, double b){
+  
+// N. Aramayo  
+
+//function to draw from univariate truncated normal distribution
+//a the lower bound for truncation
+//b the upper bound for truncation
+
+  int n = mu.size();
+  vec FA(n);
+  vec FB(n);
+  vec out(n);
+  FA = R::pnorm((a-mu)/sigma,0,1,1,0);
+  FB = R::pnorm((b-mu)/sigma,0,1,1,0);
+  out = mu+sigma*R::qnorm(R::runif(0,1)*(FB-FA)+FA,0,1,1,0);
+  return(out);
+}
+
 vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
                   mat const& X, vec const& betahat){
   //function to draw w_i as in the ordered probit model
@@ -27,15 +45,15 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
 		// sample from a truncated normal by the last w_i draw above and below from the previous iteration 
 		// draw of the following choice
                   vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
-		  //outwi[i] = rtrunSc(Cmout[0], Cmout[1], outwi[i-1], outwi[i+1]);
-		  outwi[i] = rtrunVec(Cmout[0], Cmout[1], outwi[i-1], outwi[i+1]);
+		  outwi[i] = rtrunSc(Cmout[0], Cmout[1], outwi[i-1], outwi[i+1]);
+		  //outwi[i] = rtrunVec(Cmout[0], Cmout[1], outwi[i-1], outwi[i+1]);
 		  
 	  } else if (y[i]<100){
 	  	// if it's one of i's observed responses (and it's the last observed response),
 		// sample from a truncated normal by the last w_i draw above and below from 0
                   vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
-		  //outwi[i] = rtrunSc(Cmout[0], Cmout[1], outwi[i-1], 0.0);
-		  outwi[i] = rtrunVec(Cmout[0], Cmout[1], outwi[i-1], 0.0);
+		  outwi[i] = rtrunSc(Cmout[0], Cmout[1], outwi[i-1], 0.0);
+		  //outwi[i] = rtrunVec(Cmout[0], Cmout[1], outwi[i-1], 0.0);
 		  
 	  } else {
 		// if it's a non-selected choice, sample from a negative truncated normal
