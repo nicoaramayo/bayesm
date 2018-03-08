@@ -12,10 +12,9 @@ vec rtrunSc(double mu, double sigma, double a, double b){
 //a the lower bound for truncation
 //b the upper bound for truncation
 
-  int n = mu.size();
-  vec FA(n);
-  vec FB(n);
-  vec out(n);
+  double FA;
+  double FB;
+  double out;
   FA = R::pnorm((a-mu)/sigma,0,1,1,0);
   FB = R::pnorm((b-mu)/sigma,0,1,1,0);
   out = mu+sigma*R::qnorm(R::runif(0,1)*(FB-FA)+FA,0,1,1,0);
