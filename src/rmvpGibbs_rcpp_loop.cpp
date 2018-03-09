@@ -111,7 +111,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
     		if(y[(i-1)*p + j] != 100){
       			wnew[(i-1)*p + j] = 1 - (y[(i-1)*p + j]-1)/suma;
     		}else{
-      			wnew[(i-1)*p + j] = runif(1, -1, 0);}}
+      			wnew[(i-1)*p + j] = runif(1, -1, 0)[0];}}
 }
   
   //set initial values of w,beta, sigma (or root of inv)
