@@ -129,7 +129,7 @@ print(w)
 # Wayne Taylor
 # 09/03/2014
 ###################################################################
-loopout = rmvpGibbs_rcpp_loop(R,keep,nprint,p,y,X,beta0,sigma0,V,nu,betabar,A,w);
+loopout = my_rmvpGibbs_rcpp_loop(R,keep,nprint,p,y,X,beta0,sigma0,V,nu,betabar,A,w);
 ###################################################################
 
 attributes(loopout$betadraw)$class=c("bayesm.mat","mcmc")
