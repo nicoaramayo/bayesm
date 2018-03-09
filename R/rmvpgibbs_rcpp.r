@@ -108,28 +108,12 @@ cat("initial beta= ",beta0,fill=TRUE)
 cat("initial sigma= ",fill=TRUE)
 print(sigma0)
 cat(" ",fill=TRUE)
- 
- 
-w = rep(0, length(y))
-r = length(w)/p
-for(i in 1:r){
-  suma = 0
-  for(k in 1:p){
-    if(y[(i-1)*p + k] != 100){
-      suma = suma + 1}}
-  for(j in 1:p){
-    if(y[(i-1)*p + j] != 100){
-      w[(i-1)*p + j] = 1 - (y[(i-1)*p + j]-1)/suma
-    }else{
-      w[(i-1)*p + j] = runif(1, -1, 0)}}
-}
-print(w)
 
 ###################################################################
 # Wayne Taylor
 # 09/03/2014
 ###################################################################
-loopout = my_rmvpGibbs_rcpp_loop(R,keep,nprint,p,y,X,beta0,sigma0,V,nu,betabar,A,w);
+loopout = rmvpGibbs_rcpp_loop(R,keep,nprint,p,y,X,beta0,sigma0,V,nu,betabar,A);
 ###################################################################
 
 attributes(loopout$betadraw)$class=c("bayesm.mat","mcmc")
