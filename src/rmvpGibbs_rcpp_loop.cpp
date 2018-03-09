@@ -89,7 +89,8 @@ vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec const& y,
 //[[Rcpp::export]]
 List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p, 
                          ivec const& y, mat const& X, vec const& beta0, mat const& sigma0, 
-                         mat const& V, double nu, vec const& betabar, mat const& A) {
+                         mat const& V, double nu, vec const& betabar, mat const& A,
+			vec const& w_0) {
                        
 
   int n = y.size()/p;
@@ -98,7 +99,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   //allocate space for draws
   mat sigmadraw = zeros<mat>(R/keep, p*p);
   mat betadraw = zeros<mat>(R/keep,k);
-  vec wnew = zeros<vec>(X.n_rows);
+  vec wnew = w_0; // initial utility vector
   
   //set initial values of w,beta, sigma (or root of inv)
   vec wold = wnew;
