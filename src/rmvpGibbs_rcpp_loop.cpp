@@ -86,7 +86,7 @@ vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec const& y,
 }
 
 //MAIN FUNCTION---------------------------------------------------------------------------------------
-//[[Rcpp::export]]
+[[Rcpp::export]]
 List my_rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p, 
                          ivec const& y, mat const& X, vec const& beta0, mat const& sigma0, 
                          mat const& V, double nu, vec const& betabar, mat const& A,
