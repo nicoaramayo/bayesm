@@ -1,6 +1,6 @@
 rmvpGibbs=function(Data,Prior,Mcmc){
 #
-# --------- EDITED TO COMPUTE THE MULTIVARIATE ORDERED PROBIT ---------------
+print(" --------- EDITED TO COMPUTE THE MULTIVARIATE ORDERED PROBIT ---------------")
  
 # Revision History:
 #   modified by rossi 12/18/04 to include error checking
