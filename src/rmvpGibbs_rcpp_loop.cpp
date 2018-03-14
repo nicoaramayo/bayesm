@@ -30,6 +30,38 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
   vec beta = betahat;
   
   vec outwi = w;
+	
+  int a = 0;
+	
+  int b = 0;
+ 
+  int k = 1;
+	
+  for(int i = 0; i < ny; i++){
+	  
+	  if(y[i] == k && k == 1){
+	  	vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
+		outwi[i] = trunNorm(Cmout[0], Cmout[1], outwi[i], 0);
+		
+	  } else if(y[i] != 1 && y[i] < 100){
+	  	for(int j = 0; j < ny; j++){
+			if(y[j] + 1 == y[i]){
+				// get the index of the response that is ranked one spot above of y[i]
+				a = j;
+			}
+		}
+		  
+	  }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
   
   for(int i = 0; i<ny; i++){	
 	  
@@ -39,7 +71,7 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
 	  	vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
 	  	outwi[i] = trunNorm(Cmout[0], Cmout[1], outwi[i], 0);
 		  
-	  } else if (y[i]<100 && y[i+1]<100){
+	  } else if (y[i]<100 && i+1<ny && y[i+1]<100){
 	  	// if it's one of i's observed responses (and it's not the last observed response),
 		// sample from a truncated normal by the last w_i draw above and below from the previous iteration 
 		// draw of the following choice
@@ -104,14 +136,17 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
 	
   for(int i=0; i<n; i++){
   	suma = 0;
+	// count how many responses are not ranked (i.e., y[i]=100) in suma
   	for(int k=0; k<p; k++){
-    		if(y[(i-1)*p + k] != 100){
+    		if(y[i*p + k] != 100){
       			suma = suma + 1;}}
   	for(int j=0; j<p; j++){
-    		if(y[(i-1)*p + j] != 100){
-      			wnew[(i-1)*p + j] = 1 - (y[(i-1)*p + j]-1)/suma;
+		// for every observed response, sample in a ordered and uniform fashion between 0 and 1 the utility w
+    		if(y[i*p + j] != 100){
+      			wnew[i*p + j] = 1 - (y[i*p + j]-1)/suma;
+		// for every not answered option, sample from negative uniform distribution between 0 and -1
     		}else{
-      			wnew[(i-1)*p + j] = runif(1, -1, 0)[0];}}
+      			wnew[i*p + j] = runif(1, -1, 0)[0];}}
 }
   
   //set initial values of w,beta, sigma (or root of inv)
