@@ -1,6 +1,6 @@
 #include "bayesm.h"
  
-//EDITED FOR MULTIVARIATE ORDERED PROBIT GIBBS SAMPLER -------------------------------------
+//---------------------------------EDITED FOR MULTIVARIATE ORDERED PROBIT GIBBS SAMPLER -------------------------------------
 
 //EXTRA FUNCTIONS SPECIFIC TO THE MAIN FUNCTION--------------------------------------------
 
@@ -21,8 +21,49 @@ double rtrunSc(double mu, double sigma, double a, double b){
   return(out);
 }
 
+// ---------------- QUICK SORT IMPLEMENTATION -------------------
+// This function sorts a vector in ascending order and saves the original position before the sorting in the first vector
+void swap(vec& v, vec &vy,int x, int y);
+
+void quicksort(vec &vec,vec &vecy, int L, int R) {
+    int i, j, mid, piv;
+    i = L;
+    j = R;
+    mid = L + (R - L) / 2;
+    piv = vec[mid];
+
+    while (i<R || j>L) {
+        while (vec[i] < piv)
+            i++;
+        while (vec[j] > piv)
+            j--;
+
+        if (i <= j) {
+            swap(vec, vecy, i, j); //error=swap function doesnt take 3 arguments
+            i++;
+            j--;
+        }
+        else {
+            if (i < R)
+                quicksort(vec,vecy, i, R);
+            if (j > L)
+                quicksort(vec,vecy, L, j);
+            return;
+        }
+    }
+}
+
+void swap(vec& v,vec &vy, int x, int y) {
+    int temp = v[x];
+    v[x] = v[y];
+    v[y] = temp;
+    temp = vy[x];
+    vy[x] = vy[y];
+    vy[y] = temp;
+}	
+
 vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
-                  mat const& X, vec const& betahat){
+                  mat const& X, vec const& betahat, vec y_index){
   //function to draw w_i as in the ordered probit model
 
   int ny = y.size();
@@ -31,70 +72,38 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
   
   vec outwi = w;
 	
-  int a = 0;
-	
-  int b = 0;
- 
-  int k = 1;
-	
   for(int i = 0; i < ny; i++){
 	  
-	  if(y[i] == k && k == 1){
+	  if(i == 0 && y[i] == 1){
+		// if it's the first observed response, sample from a truncated normal from above the previous iteration draw of w_i
 	  	vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
-		outwi[i] = trunNorm(Cmout[0], Cmout[1], outwi[i], 0);
+		outwi[i] = trunNorm(Cmout[0], Cmout[1], outwi[y_index[i]], 0);
 		
-	  } else if(y[i] != 1 && y[i] < 100){
-	  	for(int j = 0; j < ny; j++){
-			if(y[j] + 1 == y[i]){
-				// get the index of the response that is ranked one spot above of y[i]
-				a = j;
-			}
-		}
+	  }else if(y[i] != 100 && i+1 < ny && y[i+1] != 100){
+		// if it's another observed response, and the following response it's a ranked response, sample from a double-sided
+		// truncated normal
+		vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
+		outwi[i] = rtrunSc(Cmout[0], Cmout[1], outwi[y_index[i-1]], outwi[y_index[i+1]]);
 		  
+	  }else if(y[i] != 100 && i+1 < ny && y[i+1] == 100){
+		// if it's another observed response, and the following response it's not a ranked response, sample from a
+		// double-sided truncated normal, and truncated below by 0
+		vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
+		outwi[i] = rtrunSc(Cmout[0], Cmout[1], outwi[y_index[i-1]], 0.0);
+		  
+	 }else if(y[i] != 100 && i == ny-1){
+	  	// if it's another observed response, and it's the last response, sample from a
+		// double-sided truncated normal, and truncated below by 0
+		vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
+		outwi[i] = rtrunSc(Cmout[0], Cmout[1], outwi[y_index[i-1]], 0.0);
+	
+	 }else{
+	  // if it's not a ranked response sample from a truncated normal, truncated above by 0
+          vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
+	  outwi[i] = trunNorm(Cmout[0], Cmout[1], 0.0, 1);
 	  }
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-  
-  for(int i = 0; i<ny; i++){	
 	  
-	  if (i<1 && y[i]<100){
-		// if it's i's first observed response, sample from a truncated normal from above the previous iteration draw of w_i
-		// y[i] = 100 is a default value for not choosing alternative i
-	  	vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
-	  	outwi[i] = trunNorm(Cmout[0], Cmout[1], outwi[i], 0);
-		  
-	  } else if (y[i]<100 && i+1<ny && y[i+1]<100){
-	  	// if it's one of i's observed responses (and it's not the last observed response),
-		// sample from a truncated normal by the last w_i draw above and below from the previous iteration 
-		// draw of the following choice
-                  vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
-		  outwi[i] = rtrunSc(Cmout[0], Cmout[1], outwi[i-1], outwi[i+1]);
-		  //outwi[i] = rtrunVec(Cmout[0], Cmout[1], outwi[i-1], outwi[i+1]);
-		  
-	  } else if (y[i]<100){
-	  	// if it's one of i's observed responses (and it's the last observed response),
-		// sample from a truncated normal by the last w_i draw above and below from 0
-                  vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
-		  outwi[i] = rtrunSc(Cmout[0], Cmout[1], outwi[i-1], 0.0);
-		  //outwi[i] = rtrunVec(Cmout[0], Cmout[1], outwi[i-1], 0.0);
-		  
-	  } else {
-		// if it's a non-selected choice, sample from a negative truncated normal
-	 	vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
-	  	outwi[i] = trunNorm(Cmout[0], Cmout[1], 0.0, 1);
-	  }
-		
-  }
-  
-  return (outwi);
+  } return (outwi);
 }
 
 
@@ -107,11 +116,21 @@ vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec const& y,
   int n = w.size()/p;
   int ind; 
   vec outw = zeros<vec>(w.size());
+  vec y_ord = zeros<vec>(p);
   
   for(int i = 0; i<n; i++){
+    vec y_index = zeros<vec>(p);
+    for(int i=0; i < p; i++){
+       	 y_index[i] = i;
+    }
+ 
     ind = p*i;
-    outw.subvec(ind,ind+p-1) = drawwi_mvp(w.subvec(ind,ind+p-1),mu.subvec(ind,ind+p-1),sigmai,p,y.subvec(ind,ind+p-1),
-                X, betahat);
+	  
+    y_ord = y.subvec(ind,ind+p-1);
+    quicksort(y_ord, y_index, 0 p-1);  
+    
+    outw.subvec(ind,ind+p-1) = drawwi_mvp(w.subvec(ind,ind+p-1),mu.subvec(ind,ind+p-1),sigmai,p,y_ord,
+                X, betahat, y_index);
   }
   
   return (outw);
@@ -133,7 +152,8 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
 	
   vec wnew = zeros<vec>(X.n_rows);
   int suma;
-	
+
+  // create initial vector of utilities w
   for(int i=0; i<n; i++){
   	suma = 0;
 	// count how many responses are not ranked (i.e., y[i]=100) in suma
@@ -149,7 +169,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       			wnew[i*p + j] = runif(1, -1, 0)[0];}}
 }
   
-  //set initial values of w,beta, sigma (or root of inv)
+  //set initial values of w, beta, sigma (or root of inv)
   vec wold = wnew;
   vec betaold = beta0;
   mat C = chol(solve(trimatu(sigma0),eye(sigma0.n_cols,sigma0.n_cols))); //C is upper triangular root of sigma^-1 (G) = C'C
@@ -221,6 +241,6 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       
   return List::create(
     Named("betadraw") = betadraw, 
-    //Named("sigmadraw") = sigmadraw,
+    Named("sigmadraw") = sigmadraw,
     Named("wdraw") = wnew);
 }
