@@ -127,7 +127,7 @@ vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec const& y,
     ind = p*i;
 	  
     y_ord = y.subvec(ind,ind+p-1);
-    quicksort(y_ord, y_index, 0 p-1);  
+    quicksort(y_ord, y_index, 0, p-1);  
     
     outw.subvec(ind,ind+p-1) = drawwi_mvp(w.subvec(ind,ind+p-1),mu.subvec(ind,ind+p-1),sigmai,p,y_ord,
                 X, betahat, y_index);
