@@ -193,11 +193,13 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       
       //w is n x (p-1) vector
       //   X ix n(p-1) x k  matrix
-      //   y is n x (p-1) vector of binary (0,1) outcomes 
+      //   y is n x (p-1) vector of ranked 1 to p responses, not ranked responses are 100 by default
       //   beta is k x 1 vector
       //   sigmai is (p-1) x (p-1) 
+	    
+      ivec y_copy = y;
           
-      wnew = draww_mvp(wold,X*betaold,sigmai,y,X,betabar);
+      wnew = draww_mvp(wold,X*betaold,sigmai,y_copy,X,betabar);
   
       //draw beta given w(rep) and sigma(rep-1)
       //  note:  if Sigma^-1 (G) = C'C then Var(Ce)=CSigmaC' = I
