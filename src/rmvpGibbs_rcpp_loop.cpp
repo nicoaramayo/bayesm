@@ -163,7 +163,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   	for(int j=0; j<p; j++){
 		// for every observed response, sample in a ordered and uniform fashion between 0 and 1 the utility w
     		if(y[i*p + j] != 100){
-      			wnew[i*p + j] = 1 - (y[i*p + j]-1)/suma;
+      			wnew[i*p + j] = 1 - (y[i*p + j]-1)/(double)suma;
 		// for every not answered option, sample from negative uniform distribution between 0 and -1
     		}else{
       			wnew[i*p + j] = runif(1, -1, 0)[0];}}
