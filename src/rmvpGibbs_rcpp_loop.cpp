@@ -116,12 +116,12 @@ vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec const& y,
   int n = w.size()/p;
   int ind; 
   vec outw = zeros<vec>(w.size());
-  vec y_ord = zeros<vec>(p);
+  vec y_ord = zeros<vec>(y.size());
   
   for(int i = 0; i<n; i++){
-    vec y_index = zeros<vec>(p);
-    for(int i=0; i < p; i++){
-       	 y_index[i] = i;
+    vec y_index = zeros<vec>(y.size());
+    for(int j=0; j < p; j++){
+       	 y_index[j] = j;
     }
  
     ind = p*i;
