@@ -23,7 +23,7 @@ double rtrunSc(double mu, double sigma, double a, double b){
 
 // ---------------- QUICK SORT IMPLEMENTATION -------------------
 // This function sorts a vector in ascending order and saves the original position before the sorting in the first vector
-void swap(vec& v, vec &vy,int x, int y);
+void swap(ivec &v, vec &vy, int x, int y);
 
 void quicksort(ivec &vecx,vec &vecy, int L, int R) {
     int i, j, mid, piv;
@@ -53,7 +53,7 @@ void quicksort(ivec &vecx,vec &vecy, int L, int R) {
     }
 }
 
-void swap(vec& v,vec &vy, int x, int y) {
+void swap(ivec &v,vec &vy, int x, int y) {
     int temp = v[x];
     v[x] = v[y];
     v[y] = temp;
