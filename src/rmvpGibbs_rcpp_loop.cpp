@@ -1,6 +1,6 @@
 #include "bayesm.h"
  
-//---------------------------------EDITED FOR MULTIVARIATE ORDERED PROBIT GIBBS SAMPLER v2-------------------------------------
+//---------------------------------EDITED FOR MULTIVARIATE ORDERED PROBIT GIBBS SAMPLER v2.1-------------------------------------
 
 //EXTRA FUNCTIONS SPECIFIC TO THE MAIN FUNCTION--------------------------------------------
 
