@@ -25,29 +25,29 @@ double rtrunSc(double mu, double sigma, double a, double b){
 // This function sorts a vector in ascending order and saves the original position before the sorting in the first vector
 void swap(vec& v, vec &vy,int x, int y);
 
-void quicksort(vec &vec,vec &vecy, int L, int R) {
+void quicksort(vec &vecx,vec &vecy, int L, int R) {
     int i, j, mid, piv;
     i = L;
     j = R;
     mid = L + (R - L) / 2;
-    piv = vec[mid];
+    piv = vecx[mid];
 
     while (i<R || j>L) {
-        while (vec[i] < piv)
+        while (vecx[i] < piv)
             i++;
-        while (vec[j] > piv)
+        while (vecx[j] > piv)
             j--;
 
         if (i <= j) {
-            swap(vec, vecy, i, j); //error=swap function doesnt take 3 arguments
+            swap(vecx, vecy, i, j); //error=swap function doesnt take 3 arguments
             i++;
             j--;
         }
         else {
             if (i < R)
-                quicksort(vec,vecy, i, R);
+                quicksort(vecx,vecy, i, R);
             if (j > L)
-                quicksort(vec,vecy, L, j);
+                quicksort(vecx,vecy, L, j);
             return;
         }
     }
@@ -60,7 +60,7 @@ void swap(vec& v,vec &vy, int x, int y) {
     temp = vy[x];
     vy[x] = vy[y];
     vy[y] = temp;
-}	
+}
 
 vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
                   mat const& X, vec const& betahat, vec y_index){
