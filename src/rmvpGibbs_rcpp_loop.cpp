@@ -122,7 +122,7 @@ vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec const& y,
   int n = w.size()/p;
   int ind; 
   vec outw = zeros<vec>(w.size());
-  ivec y_ord;
+  ivec y_ordered;
   vec y_subindex;
   
   for(int i = 0; i<n; i++){
@@ -133,11 +133,11 @@ vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec const& y,
  
     ind = p*i;
 	  
-    y_ord = y.subvec(ind,ind+p-1);
-    quicksort(y_ord, y_index, 0, p-1);
+    y_ordered = y.subvec(ind,ind+p-1);
+    quicksort(y_ordered, y_index, 0, p-1);
     y_subindex = y_index.subvec(ind,ind+p-1);
     
-    outw.subvec(ind,ind+p-1) = drawwi_mvp(w.subvec(ind,ind+p-1),mu.subvec(ind,ind+p-1),sigmai,p,y_ord,
+    outw.subvec(ind,ind+p-1) = drawwi_mvp(w.subvec(ind,ind+p-1),mu.subvec(ind,ind+p-1),sigmai,p,y_ordered,
                 X, betahat, y_subindex);
   }
   
@@ -256,6 +256,5 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   return List::create(
     Named("betadraw") = betadraw, 
     Named("sigmadraw") = sigmadraw,
-    Named("wdraw") = wnew,
-    Named("y") = y);
+    Named("wdraw") = wnew);
 }
