@@ -113,7 +113,6 @@ cat(" ",fill=TRUE)
 # Wayne Taylor
 # 09/03/2014
 ###################################################################
-print(imprimir_en_c())
 loopout = rmvpGibbs_rcpp_loop(R,keep,nprint,p,y,X,beta0,sigma0,V,nu,betabar,A);
 ###################################################################
 
