@@ -254,5 +254,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   return List::create(
     Named("betadraw") = betadraw, 
     Named("sigmadraw") = sigmadraw,
-    Named("wdraw") = wnew);
+    Named("wdraw") = wnew,
+    Named("y") = y,
+    Named("yord") = y_ord);
 }
