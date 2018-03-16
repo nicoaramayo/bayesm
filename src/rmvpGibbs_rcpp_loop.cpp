@@ -113,7 +113,7 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
 }
 
 
-vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec const y,
+vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec y,
                  mat const& X, vec const& betahat){
 
   //function to draw all w vector for all n obs
