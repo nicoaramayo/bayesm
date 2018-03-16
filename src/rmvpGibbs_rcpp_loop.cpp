@@ -207,7 +207,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       //   beta is k x 1 vector
       //   sigmai is (p-1) x (p-1) 
 	    
-      ivec y_copy = y;
+      ivec y_copy = ivec(y);
           
       wnew = draww_mvp(wold,X*betaold,sigmai,y_copy,X,betabar);
   
