@@ -214,6 +214,10 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       ivec y_copy = ivec(y);
           
       wnew = draww_mvp(wold,X*betaold,sigmai,y_copy,X,betabar);
+	    
+      for(int i=0; i <15 ; i++){
+	      Rcpp::Rcout << y[i] << std::endl;
+      }
   
       //draw beta given w(rep) and sigma(rep-1)
       //  note:  if Sigma^-1 (G) = C'C then Var(Ce)=CSigmaC' = I
