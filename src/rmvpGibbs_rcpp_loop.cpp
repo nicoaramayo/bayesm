@@ -123,6 +123,7 @@ vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec const& y,
   int ind; 
   vec outw = zeros<vec>(w.size());
   ivec y_ord;
+  ivec y_subindex;
   
   for(int i = 0; i<n; i++){
     vec y_index = zeros<vec>(y.size());
