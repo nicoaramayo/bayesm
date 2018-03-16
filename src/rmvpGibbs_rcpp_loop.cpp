@@ -4,6 +4,10 @@
 
 //EXTRA FUNCTIONS SPECIFIC TO THE MAIN FUNCTION--------------------------------------------
 
+void imprimir_en_C(ivec x) {
+    Rcout << x << "\n";
+}
+
 double rtrunSc(double mu, double sigma, double a, double b){
   
 // N. Aramayo  
@@ -71,8 +75,6 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
   vec beta = betahat;
   
   vec outwi = w;
-	
-	  Rcpp::Rcout << "hola" << std::endl;
   
   for(int i = 0; i < ny; i++){
 	  
@@ -198,9 +200,6 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
     
       //draw w given beta(rep-1),sigma(rep-1)
       sigmai = trans(C)*C;
-  
-	// print something
-      //Rcout << w[i] << std::endl;
 	    
 	    
       //draw latent vector
@@ -215,10 +214,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
           
       wnew = draww_mvp(wold,X*betaold,sigmai,y_copy,X,betabar);
 	    
-      for(int i=0; i <15 ; i++){
-	      Rcpp::Rcout << y[i] << std::endl;
-      }
-  
+      imprimir_en_C(y);
       //draw beta given w(rep) and sigma(rep-1)
       //  note:  if Sigma^-1 (G) = C'C then Var(Ce)=CSigmaC' = I
       //  first, transform w_i = X_ibeta + e_i by premultiply by C
