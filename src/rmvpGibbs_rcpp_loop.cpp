@@ -72,6 +72,8 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
   
   vec outwi = w;
 	
+	  Rcpp << "hola" << endl;
+  
   for(int i = 0; i < ny; i++){
 	  
 	  if(i == 0 && i+1 <ny && y[i] == 1 && y[i+1] != 100){
@@ -113,7 +115,7 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
 }
 
 
-vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec y,
+vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec const& y,
                  mat const& X, vec const& betahat){
 
   //function to draw all w vector for all n obs
