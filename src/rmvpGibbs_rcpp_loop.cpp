@@ -1,6 +1,6 @@
 #include "bayesm.h"
  
-//---------------------------------EDITED FOR MULTIVARIATE ORDERED PROBIT GIBBS SAMPLER v2.1-------------------------------------
+//---------------------------------EDITED FOR MULTIVARIATE ORDERED PROBIT GIBBS SAMPLER ------------------------------------
 
 //EXTRA FUNCTIONS SPECIFIC TO THE MAIN FUNCTION--------------------------------------------
 
@@ -74,10 +74,15 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
 	
   for(int i = 0; i < ny; i++){
 	  
-	  if(i == 0 && y[i] == 1){
+	  if(i == 0 && i+1 <ny && y[i] == 1 && y[i+1] != 100){
 		// if it's the first observed response, sample from a truncated normal from above the previous iteration draw of w_i
 	  	vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
-		outwi[i] = trunNorm(Cmout[0], Cmout[1], outwi[y_index[i]], 0);
+		outwi[i] = trunNorm(Cmout[0], Cmout[1], outwi[y_index[i+1]], 0);
+		  
+	  }else if(i == 0 && i+1 <ny && y[i] == 1){
+		// if it's the first observed response, sample from a truncated normal from above the previous iteration draw of w_i
+	  	vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
+		outwi[i] = trunNorm(Cmout[0], Cmout[1], 0.0, 0);
 		
 	  }else if(y[i] != 100 && i+1 < ny && y[i+1] != 100){
 		// if it's another observed response, and the following response it's a ranked response, sample from a double-sided
@@ -189,6 +194,10 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       //draw w given beta(rep-1),sigma(rep-1)
       sigmai = trans(C)*C;
   
+	// print something
+      //Rcout << w[i] << std::endl;
+	    
+	    
       //draw latent vector
       
       //w is n x (p-1) vector
