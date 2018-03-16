@@ -72,7 +72,7 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
   
   vec outwi = w;
 	
-	  Rcout << "hola" << endl;
+	  Rcpp::Rcout << "hola" << std::endl;
   
   for(int i = 0; i < ny; i++){
 	  
