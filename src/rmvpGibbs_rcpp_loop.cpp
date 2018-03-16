@@ -107,8 +107,11 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
           vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
 	  outwi[i] = trunNorm(Cmout[0], Cmout[1], 0.0, 1);
 	  }
+	  Rcout<<outwi[i]<<";";
 	  
-  } return (outwi);
+  }
+	Rcout<<endl;
+	return (outwi);
 }
 
 
