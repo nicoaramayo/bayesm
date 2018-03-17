@@ -4,9 +4,16 @@
 
 //EXTRA FUNCTIONS SPECIFIC TO THE MAIN FUNCTION--------------------------------------------
 
-void imprimir_en_C() {
-    itime = time(NULL);
-    Rcout << " MCMC Iteration (est time to end - min) \n";
+time_t itime;
+char buf[100];
+
+void imprimir_en_C(int rep, int R) {
+    time_t ctime = time(NULL);    
+    char buf[32];
+    
+    double timetoend = difftime(ctime, itime) / 60.0 * (R - rep - 1) / (rep+1);
+    sprintf(buf, " %d (%.1f)\n", rep+1, timetoend);
+    Rcout <<  buf;
 }
 
 double rtrunSc(double mu, double sigma, double a, double b){
