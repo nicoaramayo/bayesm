@@ -216,8 +216,8 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
    		 vec y_index = zeros<vec>(y.size());
                  for(int j=0; j < p; j++){
        	 		y_index[j] = j;
-       }
-
+                 }
+      }
       quicksort(y_copy, y_index, 0, p-1);
 
       //draw beta given w(rep) and sigma(rep-1)
