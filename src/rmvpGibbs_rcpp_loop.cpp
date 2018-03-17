@@ -4,8 +4,9 @@
 
 //EXTRA FUNCTIONS SPECIFIC TO THE MAIN FUNCTION--------------------------------------------
 
-void imprimir_en_C(ivec x) {
-    Rcout << x << "\n";
+void imprimir_en_C() {
+    itime = time(NULL);
+    Rcout << " MCMC Iteration (est time to end - min) \n";
 }
 
 double rtrunSc(double mu, double sigma, double a, double b){
@@ -214,7 +215,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
           
       wnew = draww_mvp(wold,X*betaold,sigmai,y_copy,X,betabar);
 	    
-      imprimir_en_C(y);
+      imprimir_en_C();
       //draw beta given w(rep) and sigma(rep-1)
       //  note:  if Sigma^-1 (G) = C'C then Var(Ce)=CSigmaC' = I
       //  first, transform w_i = X_ibeta + e_i by premultiply by C
