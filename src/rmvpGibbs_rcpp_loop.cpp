@@ -222,7 +222,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
           
       wnew = draww_mvp(wold,X*betaold,sigmai,y_copy,X,betabar);
 	    
-      imprimir_en_C();
+      imprimir_en_C(rep, R);
       //draw beta given w(rep) and sigma(rep-1)
       //  note:  if Sigma^-1 (G) = C'C then Var(Ce)=CSigmaC' = I
       //  first, transform w_i = X_ibeta + e_i by premultiply by C
