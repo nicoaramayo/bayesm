@@ -132,6 +132,7 @@ vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec const& y){
   
   for(int i = 0; i < n; i++){
   //  vec y_index = zeros<vec>(y.size());
+    y_subindex = zeros<vec>(p);
     for(int j=0; j < p; j++){
        	 y_subindex[j] = j;
     }
