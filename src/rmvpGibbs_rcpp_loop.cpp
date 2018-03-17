@@ -209,16 +209,6 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       ivec y_copy = ivec(y);
           
       wnew = draww_mvp(wold,X*betaold,sigmai,y_copy,X,betabar);
-	    
-      vec y_index;
-  
-      for(int i = 0; i<n; i++){
-   		 vec y_index = zeros<vec>(y.size());
-                 for(int j=0; j < p; j++){
-       	 		y_index[j] = j;
-                 }
-      }
-      quicksort(y_copy, y_index, 0, p-1);
 
       //draw beta given w(rep) and sigma(rep-1)
       //  note:  if Sigma^-1 (G) = C'C then Var(Ce)=CSigmaC' = I
@@ -259,6 +249,16 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
     }
   
   if(nprint>0) endMcmcTimer();
+	
+  vec y_index;
+  
+      for(int i = 0; i<n; i++){
+   		 vec y_index = zeros<vec>(y.size());
+                 for(int j=0; j < p; j++){
+       	 		y_index[j] = j;
+                 }
+      }
+  quicksort(y_copy, y_index, 0, p-1);
       
   return List::create(
     Named("betadraw") = betadraw, 
