@@ -62,25 +62,28 @@ void swap(ivec &v,vec &vy, int x, int y) {
     vy[y] = temp;
 }
 
-vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
-                  mat const& X, vec const& betahat, vec y_index){
-  //function to draw w_i as in the ordered probit model
+//vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
+//                  mat const& X, vec const& betahat, vec y_index){
+vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, vec y_index){
+  //function to draw w_i as in an ordered probit fashion
 
   int ny = y.size();
   
-  vec beta = betahat;
+  //vec beta = betahat;
   
   vec outwi = w;
   
   for(int i = 0; i < ny; i++){
 	  
-	  if(i == 0 && i+1 <ny && y[i] == 1 && y[i+1] != 100){
+	  if(i == 0 && y[i] == 1 && i+1 <ny && y[i+1] != 100){
 		// if it's the first observed response, sample from a truncated normal from above the previous iteration draw of w_i
+		// (and it's not the last one, and the following is a ranked response)
 	  	vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
 		outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], outwi[y_index[i+1]], 0);
 		  
-	  }else if(i == 0 && i+1 <ny && y[i] == 1){
-		// if it's the first observed response, sample from a truncated normal from above the previous iteration draw of w_i
+	  }else if(i == 0 && y[i] == 1 && i+1 <ny && y[i+1] == 100){
+		// if it's the first observed response, sample from a positive truncated normal
+		// (and it's not the last one, and the following is a not-ranked response)
 	  	vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
 		outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], 0.0, 0);
 		
@@ -113,33 +116,33 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
 }
 
 
-vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec const& y,
-                 mat const& X, vec const& betahat){
+//vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec const& y,
+//                 mat const& X, vec const& betahat){
 
+vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec const& y){
   //function to draw all w vector for all n obs
   
   int p = sigmai.n_cols;
   int n = w.size()/p;
   int ind; 
   vec outw = zeros<vec>(w.size());
+	
   ivec y_ordered;
   vec y_subindex;
   
-  for(int i = 0; i<n; i++){
-    vec y_index = zeros<vec>(y.size());
+  for(int i = 0; i < n; i++){
+  //  vec y_index = zeros<vec>(y.size());
     for(int j=0; j < p; j++){
-       	 y_index[j] = j;
+       	 y_subindex[j] = j;
     }
  
     ind = p*i;
 	  
     y_ordered = y.subvec(ind,ind+p-1);
-    y_subindex = y_index.subvec(ind,ind+p-1);
+    //y_subindex = y_index.subvec(ind,ind+p-1);
     quicksort(y_ordered, y_subindex, 0, p-1);
     
-    
-    outw.subvec(ind,ind+p-1) = drawwi_mvp(w.subvec(ind,ind+p-1),mu.subvec(ind,ind+p-1),sigmai,p,y_ordered,
-                X, betahat, y_subindex);
+    outw.subvec(ind,ind+p-1) = drawwi_mvp(w.subvec(ind,ind+p-1),mu.subvec(ind,ind+p-1),sigmai,p,y_ordered,y_subindex);
   }
   
   return (outw);
@@ -209,7 +212,8 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
 	    
       ivec y_copy = ivec(y);
           
-      wnew = draww_mvp(wold,X*betaold,sigmai,y_copy,X,betabar);
+      //wnew = draww_mvp(wold,X*betaold,sigmai,y_copy,X,betabar);
+      wnew = draww_mvp(wold,X*betaold,sigmai,y_copy);
 
       //draw beta given w(rep) and sigma(rep-1)
       //  note:  if Sigma^-1 (G) = C'C then Var(Ce)=CSigmaC' = I
