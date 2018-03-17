@@ -4,6 +4,27 @@
 
 //EXTRA FUNCTIONS SPECIFIC TO THE MAIN FUNCTION--------------------------------------------
 
+vec breg2(mat const& root, mat const& X, ivec const& y, vec const& Abetabar) {
+
+// Keunwoo Kim 06/20/2014
+
+// Purpose: draw from posterior for linear regression, sigmasq=1.0
+
+// Arguments:
+//  root = chol((X'X+A)^-1)
+//  Abetabar = A*betabar
+
+// Output: draw from posterior
+
+// Model: y = Xbeta + e  e ~ N(0,I)
+
+// Prior: beta ~ N(betabar,A^-1)
+
+  mat cov = trans(root)*root;  
+    
+  return (cov*(trans(X)*y+Abetabar) + trans(root)*vec(rnorm(root.n_cols)));
+}
+
 double rtrunSc(double mu, double sigma, double a, double b){
   
 // N. Aramayo  
@@ -237,7 +258,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       
       //betanew = breg(zmat(span::all,0),zmat(span::all,span(1,k)),betabar,A);
 	    
-      betanew = breg1(root, X, y, Abetabar);
+      betanew = breg2(root, X, y, Abetabar);
 
 // Keunwoo Kim 06/20/2014
 
