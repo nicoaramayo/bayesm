@@ -226,7 +226,7 @@ double lpostalpha(double alpha, vec const& beta, mat const& X, vec const& y, dou
 }
 
 //Used in rbprobitGibbs and rordprobitGibbs-----------------------------------------------------------------------
-vec breg1(mat const& root, mat const& X, ivec const& y, vec const& Abetabar) {
+vec breg1(mat const& root, mat const& X, vec const& y, vec const& Abetabar) {
 
 // Keunwoo Kim 06/20/2014
 
