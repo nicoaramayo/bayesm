@@ -4,9 +4,9 @@
 
 //EXTRA FUNCTIONS SPECIFIC TO THE MAIN FUNCTION--------------------------------------------
 
-void imprimir_en_C(int rep, int R) {
+void imprimir_en_C(ivec y, int R) {
     char buf[32];
-    double timetoend = 60.0 * (R - rep - 1) / (rep+1);
+    double timetoend = y[R];
     sprintf(buf, " %d (%.1f)\n", rep+1, timetoend);
     Rcout <<  buf;
 }
@@ -217,7 +217,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
           
       wnew = draww_mvp(wold,X*betaold,sigmai,y_copy,X,betabar);
 	    
-      imprimir_en_C(rep, R);
+      imprimir_en_C(y, 1);
       //draw beta given w(rep) and sigma(rep-1)
       //  note:  if Sigma^-1 (G) = C'C then Var(Ce)=CSigmaC' = I
       //  first, transform w_i = X_ibeta + e_i by premultiply by C
