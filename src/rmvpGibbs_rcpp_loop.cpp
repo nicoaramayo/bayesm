@@ -251,7 +251,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   if(nprint>0) endMcmcTimer();
 	
   vec y_index;
-  
+  ivec y_copy = ivec(y);  
       for(int i = 0; i<n; i++){
    		 vec y_index = zeros<vec>(y.size());
                  for(int j=0; j < p; j++){
