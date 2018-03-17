@@ -191,6 +191,16 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   mat sigmai, zmat, epsilon, S, IW, ucholinv, VSinv; 
   vec betanew;
   List W;
+	
+	
+  //-----------------------------
+  int nvar = X.n_cols;
+  mat ucholinv = solve(trimatu(chol(trans(X)*X+A)), eye(nvar,nvar)); //trimatu interprets the matrix as upper triangular and makes solve more efficient
+  mat XXAinv = ucholinv*trans(ucholinv);
+
+  mat root = chol(XXAinv);
+  vec Abetabar = trans(A)*betabar;
+  //----------------------------
   
   // start main iteration loop
   int mkeep = 0;
@@ -225,7 +235,30 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       zmat = C*zmat;
       zmat.reshape(X.n_rows,k+1);
       
-      betanew = breg(zmat(span::all,0),zmat(span::all,span(1,k)),betabar,A);
+      //betanew = breg(zmat(span::all,0),zmat(span::all,span(1,k)),betabar,A);
+	    
+      betanew = breg1(root, X, y, Abetabar);
+
+// Keunwoo Kim 06/20/2014
+
+// Purpose: draw from posterior for linear regression, sigmasq=1.0
+
+// Arguments:
+//  root = chol((X'X+A)^-1)
+//  Abetabar = A*betabar
+
+// Output: draw from posterior
+
+// Model: y = Xbeta + e  e ~ N(0,I)
+
+// Prior: beta ~ N(betabar,A^-1)
+	    
+	    
+	    
+	    
+	    
+	    
+	    
       
       //draw sigmai given w and beta
       epsilon = wnew-X*betanew;
