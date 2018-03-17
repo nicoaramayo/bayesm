@@ -195,8 +195,8 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
 	
   //-----------------------------
   int nvar = X.n_cols;
-  mat ucholinv = solve(trimatu(chol(trans(X)*X+A)), eye(nvar,nvar)); //trimatu interprets the matrix as upper triangular and makes solve more efficient
-  mat XXAinv = ucholinv*trans(ucholinv);
+  mat ucholinv2 = solve(trimatu(chol(trans(X)*X+A)), eye(nvar,nvar)); //trimatu interprets the matrix as upper triangular and makes solve more efficient
+  mat XXAinv = ucholinv2*trans(ucholinv);
 
   mat root = chol(XXAinv);
   vec Abetabar = trans(A)*betabar;
