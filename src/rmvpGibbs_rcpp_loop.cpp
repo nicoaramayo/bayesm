@@ -7,7 +7,7 @@
 void imprimir_en_C(ivec y, int R) {
     char buf[32];
     double timetoend = y[R];
-    sprintf(buf, " %d (%.1f)\n", rep+1, timetoend);
+    sprintf(buf, " %d (%.1f)\n", 1, timetoend);
     Rcout <<  buf;
 }
 
