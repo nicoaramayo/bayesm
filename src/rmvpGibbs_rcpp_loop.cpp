@@ -4,11 +4,6 @@
 
 //EXTRA FUNCTIONS SPECIFIC TO THE MAIN FUNCTION--------------------------------------------
 
-void imprimir_en_C(ivec y, int R) {
-    double timetoend = y[R];
-    Rcout <<  timetoend;
-}
-
 double rtrunSc(double mu, double sigma, double a, double b){
   
 // N. Aramayo  
@@ -214,8 +209,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       ivec y_copy = ivec(y);
           
       wnew = draww_mvp(wold,X*betaold,sigmai,y_copy,X,betabar);
-	    
-      imprimir_en_C(y, 1);
+
       //draw beta given w(rep) and sigma(rep-1)
       //  note:  if Sigma^-1 (G) = C'C then Var(Ce)=CSigmaC' = I
       //  first, transform w_i = X_ibeta + e_i by premultiply by C
@@ -259,5 +253,5 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   return List::create(
     Named("betadraw") = betadraw, 
     Named("sigmadraw") = sigmadraw,
-    Named("wdraw") = y);
+    Named("ydraw") = y_index);
 }
