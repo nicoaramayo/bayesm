@@ -200,7 +200,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       			wnew[i*p + j] = 1 - (y[i*p + j]-1)/(double)suma;
 		// for every not answered option, sample from negative uniform distribution between 0 and -1
     		}else{
-      			wnew[i*p + j] = runif(1, -1, 0)[0];}}
+      			wnew[i*p + j] = runif(1, -10, 0)[0];}}
 }
   
   //set initial values of w, beta, sigma (or root of inv)
