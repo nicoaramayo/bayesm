@@ -4,7 +4,7 @@
 
 //EXTRA FUNCTIONS SPECIFIC TO THE MAIN FUNCTION--------------------------------------------
 
-void print_in_C(double beta) {  
+void print_in_C(int beta) {  
     Rcout <<  beta << endl;
 }
 
@@ -168,6 +168,11 @@ vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec const& y){
     y_ordered = y.subvec(ind,ind+p-1);
     //y_subindex = y_index.subvec(ind,ind+p-1);
     quicksort(y_ordered, y_subindex, 0, p-1);
+	  
+    for(int k=0; k<15; k++){
+	    print_in_C(y_ordered[k]);}
+    for(int l=0; l<15; l++){
+	    print_in_C(y_subindex[l]);}
     
     outw.subvec(ind,ind+p-1) = drawwi_mvp(w.subvec(ind,ind+p-1),mu.subvec(ind,ind+p-1),sigmai,p,y_ordered,y_subindex);
   }
@@ -207,8 +212,8 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
     		}else{
       			wnew[i*p + j] = runif(1, -10, 0)[0];}}
 }
-  for(int k=0; k<15; k++){
-	    print_in_C(wnew[k]);}
+  //for(int k=0; k<15; k++){
+	//    print_in_C(wnew[k]);}
   //set initial values of w, beta, sigma (or root of inv)
   vec wold = wnew;
   vec betaold = beta0;
@@ -253,8 +258,8 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       //wnew = draww_mvp(wold,X*betaold,sigmai,y_copy,X,betabar);
       wnew = draww_mvp(wold,X*betaold,sigmai,y_copy);
 	    
-      for(int k=0; k<15; k++){
-	    print_in_C(wnew[k]);}
+      //for(int k=0; k<15; k++){
+	//    print_in_C(wnew[k]);}
 
       //draw beta given w(rep) and sigma(rep-1)
       //  note:  if Sigma^-1 (G) = C'C then Var(Ce)=CSigmaC' = I
@@ -266,14 +271,12 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       zmat.reshape(X.n_rows,k+1);
       
       //betanew = breg(zmat(span::all,0),zmat(span::all,span(1,k)),betabar,A);
-      for(int l=0; l<9; l++){
-	    print_in_C(betaold[l]);}
 	    
       betanew = breg2(root, X, wnew, Abetabar);
 	   
       //if((rep+1)%10==0){
-      	for(int l=0; l<9; l++){
-	    print_in_C(betanew[l]);}
+      	//for(int l=0; l<9; l++){
+	  //  print_in_C(betanew[l]);}
 	   
       //}
       //draw sigmai given w and beta
