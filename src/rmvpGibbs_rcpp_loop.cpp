@@ -4,7 +4,7 @@
 
 //EXTRA FUNCTIONS SPECIFIC TO THE MAIN FUNCTION--------------------------------------------
 
-void print_in_C(int beta) {  
+void print_in_C(double beta) {  
     Rcout <<  beta << endl;
 }
 
@@ -202,12 +202,13 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   	for(int j=0; j<p; j++){
 		// for every observed response, sample in a ordered and uniform fashion between 0 and 1 the utility w
     		if(y[i*p + j] != 100){
-      			wnew[i*p + j] = 1.00001 - (y[i*p + j]-1)/(double)suma;
+      			wnew[i*p + j] = 10.00001 - (y[i*p + j]-1)/(double)suma;
 		// for every not answered option, sample from negative uniform distribution between 0 and -10
     		}else{
       			wnew[i*p + j] = runif(1, -10, 0)[0];}}
 }
-  
+  for(int k=0; k<15; k++){
+	    print_in_C(wnew[k]);}
   //set initial values of w, beta, sigma (or root of inv)
   vec wold = wnew;
   vec betaold = beta0;
@@ -251,6 +252,9 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
           
       //wnew = draww_mvp(wold,X*betaold,sigmai,y_copy,X,betabar);
       wnew = draww_mvp(wold,X*betaold,sigmai,y_copy);
+	    
+      for(int k=0; k<15; k++){
+	    print_in_C(wnew[k]);}
 
       //draw beta given w(rep) and sigma(rep-1)
       //  note:  if Sigma^-1 (G) = C'C then Var(Ce)=CSigmaC' = I
@@ -262,16 +266,16 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       zmat.reshape(X.n_rows,k+1);
       
       //betanew = breg(zmat(span::all,0),zmat(span::all,span(1,k)),betabar,A);
+      for(int l=0; l<9; l++){
+	    print_in_C(betaold[l]);}
 	    
       betanew = breg2(root, X, wnew, Abetabar);
 	   
-      if((rep+1)%10==0){
-      	for(int k=0; k<15; k++){
-	    print_in_C(y_copy[k]);}
-	    
-      	for(int t=0; t<15; t++){
-	    print_in_C(y[t]);}
-      }
+      //if((rep+1)%10==0){
+      	for(int l=0; l<9; l++){
+	    print_in_C(betanew[l]);}
+	   
+      //}
       //draw sigmai given w and beta
       epsilon = wnew-X*betanew;
       epsilon.reshape(p,n);  
