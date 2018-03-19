@@ -4,7 +4,7 @@
 
 //EXTRA FUNCTIONS SPECIFIC TO THE MAIN FUNCTION--------------------------------------------
 
-void print_in_C(int beta) {  
+void print_in_C(double beta) {  
     Rcout <<  beta << endl;
 }
 
@@ -136,7 +136,8 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, ve
           vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
 	  outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], 0.0, 1);
 	  }
-	  
+  print_in_C(outwi[y_index[i]]);
+  print_in_C(y_index[i]);
   }
 	return (outwi);
 }
@@ -156,7 +157,8 @@ vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec const& y){
   ivec y_ordered;
   vec y_subindex;
   
-  for(int i = 0; i < n; i++){
+  //for(int i = 0; i < n; i++){
+  for(int i = 0; i < 10; i++){
   //  vec y_index = zeros<vec>(y.size());
     y_subindex = zeros<vec>(p);
     for(int j=0; j < p; j++){
@@ -168,11 +170,6 @@ vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec const& y){
     y_ordered = y.subvec(ind,ind+p-1);
     //y_subindex = y_index.subvec(ind,ind+p-1);
     quicksort(y_ordered, y_subindex, 0, p-1);
-	
-    for(int k=0; k<p; k++){
-	    print_in_C(y_ordered[k]);}
-    for(int l=0; l<p; l++){
-	    print_in_C(y_subindex[l]);}
     
     outw.subvec(ind,ind+p-1) = drawwi_mvp(w.subvec(ind,ind+p-1),mu.subvec(ind,ind+p-1),sigmai,p,y_ordered,y_subindex);
   }
