@@ -49,7 +49,8 @@ double rtrunSc(double mu, double sigma, double a, double b){
   print_in_C(FA);
   FB = R::pnorm((b-mu)/sigma,0,1,1,0);
   print_in_C(FB);
-  out = mu+sigma*R::qnorm(R::runif(0,1)*(FB-FA)+FA,0,1,1,0);
+  //out = mu+sigma*R::qnorm(R::runif(0,1)*(FB-FA)+FA,0,1,1,0);
+  out = mu+sigma*R::qnorm(R::runif(1,0,1)*(FB-FA)+FA);	
   print_in_C(out);
   void print_line_in_C();
   return(out);
@@ -165,9 +166,7 @@ vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec const& y){
   ivec y_ordered;
   vec y_subindex;
   
-  //for(int i = 0; i < n; i++){
-  for(int i = 0; i < 10; i++){
-  //  vec y_index = zeros<vec>(y.size());
+  for(int i = 0; i < n; i++){
     y_subindex = zeros<vec>(p);
     for(int j=0; j < p; j++){
        	 y_subindex[j] = j;
