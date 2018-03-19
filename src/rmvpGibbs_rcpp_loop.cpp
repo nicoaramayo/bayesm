@@ -3,6 +3,15 @@
 //---------------------------------EDITED FOR MULTIVARIATE ORDERED PROBIT GIBBS SAMPLER ------------------------------------
 
 //EXTRA FUNCTIONS SPECIFIC TO THE MAIN FUNCTION--------------------------------------------
+time_t itime;
+
+void print_in_C(vec beta, vec w) {
+    time_t ctime = time(NULL);    
+    char buf[32];
+    sprintf(buf, " %d (%.1f)\n", beta, w);
+    Rcout <<  buf;
+}
+
 
 vec breg2(mat const& root, mat const& X, vec const& w, vec const& Abetabar) {
 
@@ -197,7 +206,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   	for(int j=0; j<p; j++){
 		// for every observed response, sample in a ordered and uniform fashion between 0 and 1 the utility w
     		if(y[i*p + j] != 100){
-      			wnew[i*p + j] = 10 - (y[i*p + j]-1)/(double)suma;
+      			wnew[i*p + j] = 1 - (y[i*p + j]-1)/(double)suma;
 		// for every not answered option, sample from negative uniform distribution between 0 and -10
     		}else{
       			wnew[i*p + j] = runif(1, -10, 0)[0];}}
@@ -260,6 +269,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
 	    
       betanew = breg2(root, X, wnew, Abetabar);
 	    
+      print_in_C(betanew, wold)
       
       //draw sigmai given w and beta
       epsilon = wnew-X*betanew;
