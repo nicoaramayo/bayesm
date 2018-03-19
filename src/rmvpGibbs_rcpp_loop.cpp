@@ -256,9 +256,9 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       zmat = C*zmat;
       zmat.reshape(X.n_rows,k+1);
       
-      betanew = breg(zmat(span::all,0),zmat(span::all,span(1,k)),betabar,A);
+      //betanew = breg(zmat(span::all,0),zmat(span::all,span(1,k)),betabar,A);
 	    
-      //betanew = breg2(root, X, wnew, Abetabar);
+      betanew = breg2(root, X, wnew, Abetabar);
 	    
       
       //draw sigmai given w and beta
