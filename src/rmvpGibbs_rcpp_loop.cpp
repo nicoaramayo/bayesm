@@ -4,7 +4,7 @@
 
 //EXTRA FUNCTIONS SPECIFIC TO THE MAIN FUNCTION--------------------------------------------
 
-void print_in_C(double beta) {  
+void print_in_C(int beta) {  
     Rcout <<  beta << endl;
 }
 
@@ -266,11 +266,11 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       betanew = breg2(root, X, wnew, Abetabar);
 	   
       if((rep+1)%10==0){
-      	for(int k=0; k<9; k++){
-	    print_in_C(betanew[k]);}
+      	for(int k=0; k<15; k++){
+	    print_in_C(y_copy[k]);}
 	    
       	for(int t=0; t<15; t++){
-	    print_in_C(wold[t]);}
+	    print_in_C(y[t]);}
       }
       //draw sigmai given w and beta
       epsilon = wnew-X*betanew;
