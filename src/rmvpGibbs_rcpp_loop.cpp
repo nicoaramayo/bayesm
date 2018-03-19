@@ -168,11 +168,12 @@ vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec const& y){
     y_ordered = y.subvec(ind,ind+p-1);
     //y_subindex = y_index.subvec(ind,ind+p-1);
     quicksort(y_ordered, y_subindex, 0, p-1);
-	  
+	
+   if(i<10){
     for(int k=0; k<15; k++){
 	    print_in_C(y_ordered[k]);}
     for(int l=0; l<15; l++){
-	    print_in_C(y_subindex[l]);}
+	    print_in_C(y_subindex[l]);}}
     
     outw.subvec(ind,ind+p-1) = drawwi_mvp(w.subvec(ind,ind+p-1),mu.subvec(ind,ind+p-1),sigmai,p,y_ordered,y_subindex);
   }
