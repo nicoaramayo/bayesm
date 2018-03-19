@@ -7,7 +7,7 @@
 void print_in_C(double beta, double w) {   
     char buf[32];
     //sprintf(buf, " %d (%.1f)\n", beta, w);
-    printf("beta y w",beta,w)
+    printf("beta y w",beta,w);
     Rcout <<  buf;
 }
 
