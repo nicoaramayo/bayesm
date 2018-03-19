@@ -3,10 +3,8 @@
 //---------------------------------EDITED FOR MULTIVARIATE ORDERED PROBIT GIBBS SAMPLER ------------------------------------
 
 //EXTRA FUNCTIONS SPECIFIC TO THE MAIN FUNCTION--------------------------------------------
-time_t itime;
 
-void print_in_C(vec beta, vec w) {
-    time_t ctime = time(NULL);    
+void print_in_C(double beta, double w) {   
     char buf[32];
     sprintf(buf, " %d (%.1f)\n", beta, w);
     Rcout <<  buf;
@@ -269,7 +267,8 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
 	    
       betanew = breg2(root, X, wnew, Abetabar);
 	    
-      print_in_C(betanew, wold)
+      for(int k=0; k<9; k++){
+	    print_in_C(betanew[k], wold[k]);}
       
       //draw sigmai given w and beta
       epsilon = wnew-X*betanew;
