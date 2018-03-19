@@ -104,36 +104,36 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, ve
 	  if(i == 0 && y[i] == 1 && i+1 <ny && y[i+1] != 100){
 		// if it's the first observed response, sample from a truncated normal from above the previous iteration draw of w_i
 		// (and it's not the last one, and the following is a ranked response)
-	  	vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
+	  	vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i+1]);
 		outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], outwi[y_index[i+1]], 0);
 		  
 	  }else if(i == 0 && y[i] == 1 && i+1 <ny && y[i+1] == 100){
 		// if it's the first observed response, sample from a positive truncated normal
 		// (and it's not the last one, and the following is a not-ranked response)
-	  	vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
+	  	vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i+1]);
 		outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], 0.0, 0);
 		
 	  }else if(y[i] != 100 && i+1 < ny && y[i+1] != 100){
 		// if it's another observed response, and the following response it's a ranked response, sample from a double-sided
 		// truncated normal
-		vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
+		vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i+1]);
 		outwi[y_index[i]] = rtrunSc(Cmout[0], Cmout[1], outwi[y_index[i-1]], outwi[y_index[i+1]]);
 		  
 	  }else if(y[i] != 100 && i+1 < ny && y[i+1] == 100){
 		// if it's another observed response, and the following response it's not a ranked response, sample from a
 		// double-sided truncated normal, and truncated below by 0
-		vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
+		vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i+1]);
 		outwi[y_index[i]] = rtrunSc(Cmout[0], Cmout[1], outwi[y_index[i-1]], 0.0);
 		  
 	 }else if(y[i] != 100 && i == ny-1){
 	  	// if it's another observed response, and it's the last response, sample from a
 		// double-sided truncated normal, and truncated below by 0
-		vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
+		vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i+1]);
 		outwi[y_index[i]] = rtrunSc(Cmout[0], Cmout[1], outwi[y_index[i-1]], 0.0);
 	
 	 }else{
 	  // if it's not a ranked response sample from a truncated normal, truncated above by 0
-          vec Cmout = condmom(outwi, mu, sigmai, p, i+1);
+          vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i+1]);
 	  outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], 0.0, 1);
 	  }
   print_in_C(outwi[y_index[i]]);
