@@ -5,7 +5,7 @@
 //EXTRA FUNCTIONS SPECIFIC TO THE MAIN FUNCTION--------------------------------------------
 
 void print_in_C(double beta) {  
-    Rcout <<  beta;
+    Rcout <<  beta << endl;
 }
 
 
@@ -264,13 +264,14 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       //betanew = breg(zmat(span::all,0),zmat(span::all,span(1,k)),betabar,A);
 	    
       betanew = breg2(root, X, wnew, Abetabar);
+	   
+      if((rep+1)%10==0){
+      	for(int k=0; k<9; k++){
+	    print_in_C(betanew[k]);}
 	    
-      //for(int k=0; k<9; k++){
-	//    print_in_C(betanew[k]);}
-	    
-      //for(int t=0; t<15; t++){
-	//    print_in_C(wold[t]);}
-      
+      	for(int t=0; t<15; t++){
+	    print_in_C(wold[t]);}
+      }
       //draw sigmai given w and beta
       epsilon = wnew-X*betanew;
       epsilon.reshape(p,n);  
@@ -299,22 +300,9 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
     }
   
   if(nprint>0) endMcmcTimer();
-	
-  //vec y_index;
-  //ivec y_copy = ivec(y);  
-   //   for(int i = 0; i<n; i++){
-  // 		 vec y_index = zeros<vec>(y.size());
-  //               for(int j=0; j < p; j++){
-  //     	 		y_index[j] = j;
-  //               }
-  //    }
-  //quicksort(y_copy, y_index, 0, p-1);
       
   return List::create(
     Named("betadraw") = betadraw, 
     Named("sigmadraw") = sigmadraw,
     Named("wdraw") = wnew);
-   // Named("ydraw") = y,
-   // Named("yorddraw") = y_copy,
-   // Named("yinddraw") = y_index);
 }
