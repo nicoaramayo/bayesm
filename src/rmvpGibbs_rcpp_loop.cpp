@@ -5,7 +5,11 @@
 //EXTRA FUNCTIONS SPECIFIC TO THE MAIN FUNCTION--------------------------------------------
 
 void print_in_C(double beta) {  
-    Rcout <<  beta << endl;
+    Rcout <<  beta << ";";
+}
+
+void print_line_in_C() {  
+    Rcout <<  endl;
 }
 
 
@@ -42,8 +46,12 @@ double rtrunSc(double mu, double sigma, double a, double b){
   double FB;
   double out;
   FA = R::pnorm((a-mu)/sigma,0,1,1,0);
+  print_in_C(FA);
   FB = R::pnorm((b-mu)/sigma,0,1,1,0);
+  print_in_C(FB);
   out = mu+sigma*R::qnorm(R::runif(0,1)*(FB-FA)+FA,0,1,1,0);
+  print_in_C(out);
+  void print_line_in_C()
   return(out);
 }
 
@@ -136,8 +144,8 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, ve
           vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i+1]);
 	  outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], 0.0, 1);
 	  }
-  print_in_C(outwi[y_index[i]]);
-  print_in_C(y_index[i]);
+  //print_in_C(outwi[y_index[i]]);
+  //print_in_C(y_index[i]);
   }
 	return (outwi);
 }
