@@ -94,8 +94,7 @@ void swap(ivec &v,vec &vy, int x, int y) {
     vy[y] = temp;
 }
 
-//vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
-//                  mat const& X, vec const& betahat, vec y_index){
+
 vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, vec y_index){
   //function to draw w_i as in an ordered probit fashion
 
@@ -106,6 +105,11 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, ve
   vec outwi = w;
   
   for(int i = 0; i < ny; i++){
+	  print_in_C(outwi[y_index[i]]);
+	  print_in_C(mu);
+	  print_in_C(sigma);
+	  print_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[0]);
+	  print_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[1]);
 	  
 	  if(i == 0 && y[i] == 1 && i+1 <ny && y[i+1] != 100){
 		// if it's the first observed response, sample from a truncated normal from above the previous iteration draw of w_i
@@ -142,6 +146,8 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, ve
           vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i]+1);
 	  outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], 0.0, 1);
 	  }
+  print_in_C(outwi[y_index[i]]);
+  print_line_in_C();
   }
 	return (outwi);
 }
