@@ -94,20 +94,17 @@ void swap(ivec &v,vec &vy, int x, int y) {
     vy[y] = temp;
 }
 
-//vec const& w
-vec drawwi_mvp(vec w, vec const& mu, mat const& sigmai, int p, ivec y, vec y_index){
+vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, vec y_index){
   //function to draw w_i as in an ordered probit fashion
 
   int ny = y.size();
   
-  //vec beta = betahat;
-  
   vec outwi = w;
   
   for(int i = 0; i < ny; i++){
-	  //print_in_C(outwi[y_index[i]]);
-	  //print_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[0]);
-	  //print_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[1]);
+	  print_in_C(outwi[y_index[i]]);
+	  print_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[0]);
+	  print_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[1]);
 	  
 	  if(i == 0 && y[i] == 1 && i+1 <ny && y[i+1] != 100){
 		// if it's the first observed response, sample from a truncated normal from above the previous iteration draw of w_i
@@ -144,8 +141,8 @@ vec drawwi_mvp(vec w, vec const& mu, mat const& sigmai, int p, ivec y, vec y_ind
           	vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i]+1);
 	  	outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], 0.0, 1);
 	  }
-  //print_in_C(outwi[y_index[i]]);
-  //print_line_in_C();
+  print_in_C(outwi[y_index[i]]);
+  print_line_in_C();
   }
 	return (outwi);
 }
@@ -273,11 +270,9 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
 	    
       //betanew = breg2(root, X, wnew, Abetabar);
 	   
-      //if((rep+1)%10==0){
-      	//for(int l=0; l<9; l++){
-	  //  print_in_C(betanew[l]);}
+      for(int l=0; l<9; l++){
+	  print_in_C(betanew[l]);}
 	   
-      //}
       //draw sigmai given w and beta
       epsilon = wnew-X*betanew;
       epsilon.reshape(p,n);  
