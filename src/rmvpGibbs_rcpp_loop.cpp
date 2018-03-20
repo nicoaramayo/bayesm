@@ -106,8 +106,6 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, ve
   
   for(int i = 0; i < ny; i++){
 	  print_in_C(outwi[y_index[i]]);
-	  print_in_C(mu);
-	  print_in_C(sigma);
 	  print_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[0]);
 	  print_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[1]);
 	  
