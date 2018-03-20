@@ -224,12 +224,12 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
 	
 	
   //-----------------------------
-  int nvar = X.n_cols;
-  mat ucholinv2 = solve(trimatu(chol(trans(X)*X+A)), eye(nvar,nvar)); //trimatu interprets the matrix as upper triangular and makes solve more efficient
-  mat XXAinv = ucholinv2*trans(ucholinv2);
+  //int nvar = X.n_cols;
+  //mat ucholinv2 = solve(trimatu(chol(trans(X)*X+A)), eye(nvar,nvar)); //trimatu interprets the matrix as upper triangular and makes solve more efficient
+  //mat XXAinv = ucholinv2*trans(ucholinv2);
 
-  mat root = chol(XXAinv);
-  vec Abetabar = trans(A)*betabar;
+  //mat root = chol(XXAinv);
+  //vec Abetabar = trans(A)*betabar;
   //----------------------------
   
   // start main iteration loop
@@ -255,9 +255,6 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
           
       //wnew = draww_mvp(wold,X*betaold,sigmai,y_copy,X,betabar);
       wnew = draww_mvp(wold,X*betaold,sigmai,y_copy);
-	    
-      //for(int k=0; k<15; k++){
-	//    print_in_C(wnew[k]);}
 
       //draw beta given w(rep) and sigma(rep-1)
       //  note:  if Sigma^-1 (G) = C'C then Var(Ce)=CSigmaC' = I
@@ -268,9 +265,9 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       zmat = C*zmat;
       zmat.reshape(X.n_rows,k+1);
       
-      //betanew = breg(zmat(span::all,0),zmat(span::all,span(1,k)),betabar,A);
+      betanew = breg(zmat(span::all,0),zmat(span::all,span(1,k)),betabar,A);
 	    
-      betanew = breg2(root, X, wnew, Abetabar);
+      //betanew = breg2(root, X, wnew, Abetabar);
 	   
       //if((rep+1)%10==0){
       	//for(int l=0; l<9; l++){
