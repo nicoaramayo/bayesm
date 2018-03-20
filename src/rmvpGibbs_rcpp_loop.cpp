@@ -105,9 +105,9 @@ vec drawwi_mvp(vec w, vec const& mu, mat const& sigmai, int p, ivec y, vec y_ind
   vec outwi = w;
   
   for(int i = 0; i < ny; i++){
-	  print_in_C(outwi[y_index[i]]);
-	  print_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[0]);
-	  print_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[1]);
+	  //print_in_C(outwi[y_index[i]]);
+	  //print_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[0]);
+	  //print_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[1]);
 	  
 	  if(i == 0 && y[i] == 1 && i+1 <ny && y[i+1] != 100){
 		// if it's the first observed response, sample from a truncated normal from above the previous iteration draw of w_i
@@ -144,8 +144,8 @@ vec drawwi_mvp(vec w, vec const& mu, mat const& sigmai, int p, ivec y, vec y_ind
           	vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i]+1);
 	  	outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], 0.0, 1);
 	  }
-  print_in_C(outwi[y_index[i]]);
-  print_line_in_C();
+  //print_in_C(outwi[y_index[i]]);
+  //print_line_in_C();
   }
 	return (outwi);
 }
@@ -210,9 +210,9 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
 		// for every observed response, sample in a ordered and uniform fashion between 0 and 1 the utility w
     		if(y[i*p + j] != 100){
       			wnew[i*p + j] = 1.00001 - (y[i*p + j]-1)/(double)suma;
-		// for every not answered option, sample from negative uniform distribution between 0 and -10
+		// for every not answered option, sample from negative uniform distribution between 0 and -1
     		}else{
-      			wnew[i*p + j] = runif(1, -10, 0)[0];}}
+      			wnew[i*p + j] = runif(1, -1, 0)[0];}}
 }
   //for(int k=0; k<15; k++){
 	//    print_in_C(wnew[k]);}
