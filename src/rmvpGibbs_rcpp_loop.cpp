@@ -94,8 +94,8 @@ void swap(ivec &v,vec &vy, int x, int y) {
     vy[y] = temp;
 }
 
-
-vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, vec y_index){
+//vec const& w
+vec drawwi_mvp(vec w, vec const& mu, mat const& sigmai, int p, ivec y, vec y_index){
   //function to draw w_i as in an ordered probit fashion
 
   int ny = y.size();
@@ -140,9 +140,9 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, ve
 		outwi[y_index[i]] = rtrunSc(Cmout[0], Cmout[1], 0.0, outwi[y_index[i-1]]);
 	
 	 }else{
-	  // if it's not a ranked response sample from a truncated normal, truncated above by 0
-          vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i]+1);
-	  outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], 0.0, 1);
+	  	// if it's not a ranked response sample from a truncated normal, truncated above by 0
+          	vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i]+1);
+	  	outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], 0.0, 1);
 	  }
   print_in_C(outwi[y_index[i]]);
   print_line_in_C();
