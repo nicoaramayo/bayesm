@@ -54,6 +54,9 @@ double rtrunSc(double mu, double sigma, double a, double b){
   FB = R::pnorm((b-mu)/sigma,0,1,1,0);
   print_in_C(FB);
   out = mu+sigma*R::qnorm(R::runif(0,1)*(FB-FA)+FA,0,1,1,0);
+  print_in_C(R::runif(0,1));
+  print_in_C(R::runif(0,1)*(FB-FA)+FA);
+  print_in_C(R::qnorm(R::runif(0,1)*(FB-FA)+FA,0,1,1,0));
   print_in_C(out);
   print_line_in_C();
   return(out);
