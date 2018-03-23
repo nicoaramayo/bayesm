@@ -12,28 +12,6 @@ void print_line_in_C() {
     Rcout <<  endl;
 }
 
-
-vec breg2(mat const& root, mat const& X, vec const& w, vec const& Abetabar) {
-
-// Keunwoo Kim 06/20/2014
-
-// Purpose: draw from posterior for linear regression, sigmasq=1.0
-
-// Arguments:
-//  root = chol((X'X+A)^-1)
-//  Abetabar = A*betabar
-
-// Output: draw from posterior
-
-// Model: w = Xbeta + e  e ~ N(0,I)
-
-// Prior: beta ~ N(betabar,A^-1)
-
-  mat cov = trans(root)*root;  
-    
-  return (cov*(trans(X)*w+Abetabar) + trans(root)*vec(rnorm(root.n_cols)));
-}
-
 double rtrunSc(double mu, double sigma, double a, double b){
   
 // N. Aramayo  
@@ -95,16 +73,16 @@ void swap(ivec &v,vec &vy, int x, int y) {
 }
 
 vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, vec y_index){
-  //function to draw w_i as in an ordered probit fashion
+  //function to draw w_i as in an ordered multivariate probit fashion
 
   int ny = y.size();
   
   vec outwi = w;
   
   for(int i = 0; i < ny; i++){
-	  print_in_C(outwi[y_index[i]]);
-	  print_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[0]);
-	  print_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[1]);
+	  //print_in_C(outwi[y_index[i]]);
+	  //print_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[0]);
+	  //print_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[1]);
 	  
 	  if(i == 0 && y[i] == 1 && i+1 <ny && y[i+1] != 100){
 		// if it's the first observed response, sample from a truncated normal from above the previous iteration draw of w_i
@@ -141,15 +119,11 @@ vec drawwi_mvp(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, ve
           	vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i]+1);
 	  	outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], 0.0, 1);
 	  }
-  print_in_C(outwi[y_index[i]]);
-  print_line_in_C();
+  //print_in_C(outwi[y_index[i]]);
+  //print_line_in_C();
   }
 	return (outwi);
 }
-
-
-//vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec const& y,
-//                 mat const& X, vec const& betahat){
 
 vec draww_mvp(vec const& w, vec const& mu, mat const& sigmai, ivec const& y){
   //function to draw all w vector for all n obs
@@ -211,8 +185,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
     		}else{
       			wnew[i*p + j] = runif(1, -1, 0)[0];}}
 }
-  //for(int k=0; k<15; k++){
-	//    print_in_C(wnew[k]);}
+
   //set initial values of w, beta, sigma (or root of inv)
   vec wold = wnew;
   vec betaold = beta0;
@@ -222,16 +195,6 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   mat sigmai, zmat, epsilon, S, IW, ucholinv, VSinv; 
   vec betanew;
   List W;
-	
-	
-  //-----------------------------
-  //int nvar = X.n_cols;
-  //mat ucholinv2 = solve(trimatu(chol(trans(X)*X+A)), eye(nvar,nvar)); //trimatu interprets the matrix as upper triangular and makes solve more efficient
-  //mat XXAinv = ucholinv2*trans(ucholinv2);
-
-  //mat root = chol(XXAinv);
-  //vec Abetabar = trans(A)*betabar;
-  //----------------------------
   
   // start main iteration loop
   int mkeep = 0;
@@ -252,9 +215,9 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       //   beta is k x 1 vector
       //   sigmai is (p-1) x (p-1) 
 	    
+      // create a copy of the vector of responses as to not modify the original order of the vector
       ivec y_copy = ivec(y);
-          
-      //wnew = draww_mvp(wold,X*betaold,sigmai,y_copy,X,betabar);
+
       wnew = draww_mvp(wold,X*betaold,sigmai,y_copy);
 
       //draw beta given w(rep) and sigma(rep-1)
@@ -267,11 +230,6 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       zmat.reshape(X.n_rows,k+1);
       
       betanew = breg(zmat(span::all,0),zmat(span::all,span(1,k)),betabar,A);
-	    
-      //betanew = breg2(root, X, wnew, Abetabar);
-	   
-      //for(int l=0; l<9; l++){
-	//  print_in_C(betanew[l]);}
 	   
       //draw sigmai given w and beta
       epsilon = wnew-X*betanew;
