@@ -149,10 +149,11 @@ vec drawwi_mvop(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, v
 		outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], outwi[y_index[i+1]], 0);
 		  
 	  }else if(i == 0 && y[i] == 1 && i+1 <ny && y[i+1] == 100){
-		// if it's the first observed response, sample normal distribution
+		// if it's the first observed response, sample from a normal distribution
 		// (and it's not the last one, but it's the last ranked response)
 	  	vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i]+1);
-		outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], -10000000000000.0, 0);
+		outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], outwi[y_index[i+1]], 0);
+		//outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], -10000000000000.0, 0);
 		last_response_index = y_index[i];
 		
 	  }else if(y[i] != 100 && i+1 < ny && y[i+1] != 100){
