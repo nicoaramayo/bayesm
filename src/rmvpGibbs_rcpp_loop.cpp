@@ -105,7 +105,7 @@ vec drawwi_mvop_n(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
 	
           }else if(y[i] != 100 && i+1 < ny && y[i+1] == 100){
 		// if it's another observed response, and the following response it's not a ranked response, sample from a
-		 double-sided truncated normal, and truncated below by 0
+		//double-sided truncated normal, and truncated below by 0
 		vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i]+1);
 		outwi[y_index[i]] = rtrunSc(Cmout[0], Cmout[1], 0.0, outwi[y_index[i-1]]);
 		  
