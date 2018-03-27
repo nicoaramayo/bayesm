@@ -138,6 +138,9 @@ vec drawwi_mvop(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, v
   int last_response_index = 0;
   
   for(int i = 0; i < ny; i++){
+	  print_in_C(outwi[y_index[i]]);
+	  print_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[0]);
+	  print_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[1]);
 	  
 	  if(i == 0 && y[i] == 1 && i+1 <ny && y[i+1] != 100){
 		// if it's the first observed response, sample from a truncated normal from above by the utility of the next response
@@ -175,6 +178,8 @@ vec drawwi_mvop(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, v
           	vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i]+1);
 	  	outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], outwi[last_response_index], 1);
 	  }
+  print_in_C(outwi[y_index[i]]);
+  print_line_in_C();
   }
 	return (outwi);
 }
