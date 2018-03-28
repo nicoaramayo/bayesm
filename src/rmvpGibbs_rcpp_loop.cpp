@@ -157,7 +157,7 @@ vec drawwi_mvop(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, v
 		// (and it's not the last one, but it's the last ranked response)
 	  	vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i]+1);
 		outwi[y_index[i]] = rtrunSc(Cmout[0], Cmout[1], -1000000000000000.0, 1000000000000000.0);
-		last_response_index = y_index[i];
+		last_response_index = y_index[i]-1;
 		
 	  }else if(y[i] != 100 && i+1 < ny && y[i+1] != 100){
 		// if it's another observed response, and the following response it's a ranked response, sample from a double-sided
@@ -170,7 +170,7 @@ vec drawwi_mvop(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, v
 		// truncated normal (this is the last observed response, so we save the index)
 		vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i]+1);
 		outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], outwi[y_index[i-1]], 1);
-		last_response_index = y_index[i];
+		last_response_index = y_index[i]-1;
 		  
 	 }else if(y[i] != 100 && i == ny-1){
 	  	// if it's another observed response, and it's the last response, sample from a
