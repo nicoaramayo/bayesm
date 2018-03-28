@@ -4,7 +4,11 @@
 
 //EXTRA FUNCTIONS SPECIFIC TO THE MAIN FUNCTION--------------------------------------------
 
-void print_in_C(double beta) {  
+void print_double_in_C(double beta) {  
+    Rcout <<  beta << ";";
+}
+
+void print_int_in_C(int beta) {  
     Rcout <<  beta << ";";
 }
 
@@ -135,12 +139,12 @@ vec drawwi_mvop(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, v
   
   vec outwi = w;
 	
-  int last_response_index = 0;
+  int last_response_index = 1000;
   
   for(int i = 0; i < ny; i++){
-	  print_in_C(outwi[y_index[i]]);
-	  print_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[0]);
-	  print_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[1]);
+	  print_double_in_C(outwi[y_index[i]]);
+	  print_double_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[0]);
+	  print_double_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[1]);
 	  
 	  if(i == 0 && y[i] == 1 && i+1 <ny && y[i+1] != 100){
 		// if it's the first observed response, sample from a truncated normal from above by the utility of the next response
@@ -152,8 +156,7 @@ vec drawwi_mvop(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, v
 		// if it's the first observed response, sample from a normal distribution
 		// (and it's not the last one, but it's the last ranked response)
 	  	vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i]+1);
-		outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], outwi[y_index[i+1]], 0);
-		//outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], -10000000000000.0, 0);
+		outwi[y_index[i]] = rtrunSc(Cmout[0], Cmout[1], -1000000000000000.0, 1000000000000000.0);
 		last_response_index = y_index[i];
 		
 	  }else if(y[i] != 100 && i+1 < ny && y[i+1] != 100){
@@ -180,7 +183,8 @@ vec drawwi_mvop(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, v
           	vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i]+1);
 	  	outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], outwi[last_response_index], 1);
 	  }
-  print_in_C(outwi[y_index[i]]);
+  print_double_in_C(outwi[y_index[i]]);
+  print_int_in_C(last_response_index);
   print_line_in_C();
   }
 	return (outwi);
