@@ -225,6 +225,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   //allocate space for draws
   mat sigmadraw = zeros<mat>(R/keep, p*p);
   mat betadraw = zeros<mat>(R/keep,k);
+  mat wdraw = zeros<mat>(R/keep,y.size());
 	
   vec wnew = zeros<vec>(X.n_rows);
   int suma;
@@ -311,6 +312,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
           betadraw(mkeep-1,span::all) = trans(betanew);
           IW  = as<mat>(W["IW"]);
           sigmadraw(mkeep-1,span::all) = trans(vectorise(IW));
+	  wdraw(mkeep-1,span::all) = trans(wnew);
          }
         
       wold = wnew;
