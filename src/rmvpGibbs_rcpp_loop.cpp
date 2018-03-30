@@ -58,6 +58,8 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   //allocate space for draws
   mat sigmadraw = zeros<mat>(R/keep, p*p);
   mat betadraw = zeros<mat>(R/keep,k);
+  mat wdraw = zeros<mat>(R/keep,y.size());
+	
   vec wnew = zeros<vec>(X.n_rows);
   
   //set initial values of w,beta, sigma (or root of inv)
