@@ -89,13 +89,15 @@ vec drawwi_mvop_n(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y,
 	  //print_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[0]);
 	  //print_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[1]);
 	  
-	  if(i == 0 && y[i] == 1 && i+1 <ny && y[i+1] != 100){
+	  if(i == 0 && i+1 <ny && y[i+1] != 100){
+	  //if(i == 0 && y[i] == 1 && i+1 <ny && y[i+1] != 100){
 		// if it's the first observed response, sample from a truncated normal from above by the utility of the next response
 		// (and it's not the last one, and the following is a ranked response)
 	  	vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i]+1);
 		outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], outwi[y_index[i+1]], 0);
-		  
-	  }else if(i == 0 && y[i] == 1 && i+1 <ny && y[i+1] == 100){
+		 
+          }else if(i == 0 && i+1 <ny && y[i+1] == 100){
+	  //}else if(i == 0 && y[i] == 1 && i+1 <ny && y[i+1] == 100){
 		// if it's the first observed response, sample from a positive truncated normal
 		// (and it's not the last one, and the following is a not-ranked response)
 	  	vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i]+1);
@@ -238,7 +240,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
     		if(y[i*p + k] != 100){
       			suma = suma + 1;}}
   	for(int j=0; j<p; j++){
-		// for every observed response, sample in a ordered and uniform fashion between 0 and 1 the utility w
+		// for every observed response, sample in a ordered and uniform fashion between 0 and 2 the utility w
     		if(y[i*p + j] != 100){
       			wnew[i*p + j] = 2.00001 - 2*(y[i*p + j]-1)/(double)suma;
 		// for every not answered option, sample from negative uniform distribution between 0 and -2
