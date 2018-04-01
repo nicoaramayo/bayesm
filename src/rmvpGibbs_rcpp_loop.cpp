@@ -314,7 +314,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
           betadraw(mkeep-1,span::all) = trans(betanew);
           IW  = as<mat>(W["IW"]);
           sigmadraw(mkeep-1,span::all) = trans(vectorise(IW));
-	  wdraw(mkeep-1,span::all) = trans(wnew);
+	  //wdraw(mkeep-1,span::all) = trans(wnew);
          }
         
       wold = wnew;
@@ -326,5 +326,6 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   return List::create(
     Named("betadraw") = betadraw, 
     Named("sigmadraw") = sigmadraw,
-    Named("wdraw") = wdraw);
+    //Named("wdraw") = wdraw
+    Named("wdraw") = wnew);
 }
