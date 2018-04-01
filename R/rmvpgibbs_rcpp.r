@@ -89,7 +89,7 @@ if(is.null(Mcmc$nprint)) {nprint=BayesmConstant.nprint} else {nprint=Mcmc$nprint
 # print out problem
 #
 cat(" ",fill=TRUE)
-cat("Starting Gibbs Sampler for MVP",fill=TRUE)
+cat("Starting Gibbs Sampler for the Multivariate Ordered Probit",fill=TRUE)
 cat("  ",n," obs of ",p," binary indicators; ",k," indep vars (including intercepts)",fill=TRUE)
 cat(" ",fill=TRUE)
 cat("Prior Parms:",fill=TRUE)
