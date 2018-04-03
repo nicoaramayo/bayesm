@@ -318,7 +318,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
 	    
       //save w draws every 10th draw
         if((rep+1)%10==0){
-	  mkeep = (rep+1)/keep;
+	  mkeep = (rep+1)/10;
 	  wdraw(mkeep-1,span::all) = trans(wnew);
 	 }
 		
