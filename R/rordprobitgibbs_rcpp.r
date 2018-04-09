@@ -130,7 +130,7 @@ else
 # print out problem
 #
 cat(" ", fill=TRUE)
-cat("Starting Gibbs Sampler for Ordered Probit Model",fill=TRUE)
+cat("Starting Gibbs Sampler for Ordered Probit Model (cutoff c[1] set to 0)",fill=TRUE)
 cat("   with ",nobs,"observations",fill=TRUE)
 cat(" ", fill=TRUE)
 cat("Table of y values",fill=TRUE)
