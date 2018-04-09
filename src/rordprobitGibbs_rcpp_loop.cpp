@@ -5,8 +5,8 @@
 vec dstartoc(vec const& dstar){
   int ndstar = dstar.size();
   vec c(ndstar+3);
-  c[0] = 0;
-  c[1] = 3;
+  c[0] = -100;
+  c[1] = 0;
   c(span(2,ndstar+1)) = cumsum(exp(dstar));
   c[ndstar+2] = 100;
   
