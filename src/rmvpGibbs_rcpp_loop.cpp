@@ -91,7 +91,7 @@ vec drawwi_mvop(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, v
 	  
 	  if(i == 0 && i+1 <ny && y[i+1] != 100){
 	  //if(i == 0 && y[i] == 1 && i+1 <ny && y[i+1] != 100){
-		// if it's the first observed response, sample from a truncated normal from above by the utility of the next response
+		// if it's the first observed response, sample from a truncated normal from below by the utility of the next response
 		// (and it's not the last one, and the following is a ranked response)
 	  	vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i]+1);
 		outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], outwi[y_index[i+1]], 0);
@@ -100,6 +100,14 @@ vec drawwi_mvop(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, v
 	  //}else if(i == 0 && y[i] == 1 && i+1 <ny && y[i+1] == 100){
 		// if it's the first observed response, sample from a positive truncated normal
 		// (and it's not the last one, and the following is a not-ranked response)
+	  	vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i]+1);
+		outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], 0.0, 0);
+		  
+	  }else if(i == 0){
+	  //}else if(i == 0 && y[i] == 1 && i+1 <ny && y[i+1] == 100){
+		// if it's the first observed response, sample from a positive truncated normal
+		// (and it's the last one (needed for the ordered probit)
+		//DOES THIS WORK FOR ONLY 1 RANKED RESPONSE??
 	  	vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i]+1);
 		outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], 0.0, 0);
 		
