@@ -183,6 +183,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   //allocate space for draws
   mat sigmadraw = zeros<mat>(R/keep, p*p);
   mat betadraw = zeros<mat>(R/keep,k);
+  mat wdraw = zeros<mat>(R/keep,y.size());
   //mat wdraw = zeros<mat>(R/10,y.size());
 	
   vec wnew = zeros<vec>(X.n_rows);
@@ -275,7 +276,8 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       //save w draws every 10th draw
 	//if((rep+1)%10==0){
 	if((rep+1)%keep==0){
-	  mkeep = (rep+1)/10;
+	  //mkeep = (rep+1)/10;
+	  mkeep = (rep+1)/keep;
 	  wdraw(mkeep-1,span::all) = trans(wnew);
 	 }
 		
