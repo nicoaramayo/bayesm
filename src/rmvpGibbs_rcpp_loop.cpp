@@ -273,10 +273,11 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
          }
 	    
       //save w draws every 10th draw
-        //if((rep+1)%10==0){
-	  //mkeep = (rep+1)/10;
-	  //wdraw(mkeep-1,span::all) = trans(wnew);
-	 //}
+	//if((rep+1)%10==0){
+	if((rep+1)%keep==0){
+	  mkeep = (rep+1)/10;
+	  wdraw(mkeep-1,span::all) = trans(wnew);
+	 }
 		
       wold = wnew;
       betaold = betanew;
@@ -287,7 +288,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   return List::create(
     Named("betadraw") = betadraw, 
     Named("sigmadraw") = sigmadraw,
-    //Named("wdraw") = wdraw);
+    Named("wdraw") = wdraw);
     //use to save only the last w draw:
-    Named("wdraw") = wnew);
+    //Named("wdraw") = wnew);
 }
