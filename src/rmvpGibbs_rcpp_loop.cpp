@@ -85,49 +85,35 @@ vec drawwi_mvop(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, v
   vec outwi = w;
   
   for(int i = 0; i < ny; i++){
-	  //print_in_C(outwi[y_index[i]]);
-	  //print_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[0]);
-	  //print_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[1]);
+	  print_double_in_C(outwi[y_index[i]]);
+	  print_double_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[0]);
+	  print_double_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[1]);
 	  
-	  //if(i == 0 && i+1 <ny && y[i+1] != 100){
-	  if(i == 0 && y[i] == 1 && i+1 <ny && y[i+1] != 100){
+	  if(i == 0 && y[i] != 100 && i+1 <ny && y[i+1] != 100){
+	  //if(i == 0 && y[i] == 1 && i+1 <ny && y[i+1] != 100){
 		// if it's the first observed response, sample from a truncated normal from below by the utility of the next response
 		// (and it's not the last one, and the following is a ranked response)
 	  	vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i]+1);
 		outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], outwi[y_index[i+1]], 0);
 		 
-          //}else if(i == 0 && i+1 <ny && y[i+1] == 100){
-	  }else if(i == 0 && y[i] == 1 && i+1 <ny && y[i+1] == 100){
-		// if it's the first observed response, sample from a positive truncated normal
-		// (and it's not the last one, and the following is a not-ranked response)
-	  	vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i]+1);
-		outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], 0.0, 0);
-		  
-	  }else if(i == 0){
+          }else if(i == 0 &&  y[i] != 100){
 	  //}else if(i == 0 && y[i] == 1 && i+1 <ny && y[i+1] == 100){
 		// if it's the first observed response, sample from a positive truncated normal
-		// (and it's the last one (needed for the ordered probit)
-		//DOES THIS WORK FOR ONLY 1 RANKED RESPONSE??
+		// (and there isn't a next ranked response)
 	  	vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i]+1);
 		outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], 0.0, 0);
 		
 	  }else if(y[i] != 100 && i+1 < ny && y[i+1] != 100){
-		// if it's another observed response, and the following response it's a ranked response, sample from a double-sided
-		// truncated normal
+		// if it's an observed response that it's not the first one, and the following response it's a ranked response,
+		// sample from a double-sided truncated normal
 		vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i]+1);
 		outwi[y_index[i]] = rtrunSc(Cmout[0], Cmout[1], outwi[y_index[i+1]], outwi[y_index[i-1]]);
 	
-          }else if(y[i] != 100 && i+1 < ny && y[i+1] == 100){
-		// if it's another observed response, and the following response it's not a ranked response, sample from a
-		//double-sided truncated normal, and truncated below by 0
+          }else if(y[i] != 100){
+		// if it's an observed response that it's not the first one and there isn't a next ranked response,
+		// sample from a double-sided truncated normal truncated below by 0
 		vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i]+1);
 		outwi[y_index[i]] = rtrunSc(Cmout[0], Cmout[1], 0.0, outwi[y_index[i-1]]);
-		  
-	 }else if(y[i] != 100 && i == ny-1){
-	  	// if it's another observed response, and it's the last response, sample from a
-		// truncated normal from above
-		vec Cmout = condmom(outwi, mu, sigmai, p, y_index[i]+1);
-		outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], outwi[y_index[i-1]], 1);
 		  	
 	 }else{
 	  	// if it's not a ranked response sample from a truncated normal, truncated above by 0
@@ -135,8 +121,8 @@ vec drawwi_mvop(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, v
 	  	outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], 0.0, 1);
 	  }
 	  
-  //print_in_C(outwi[y_index[i]]);
-  //print_line_in_C();
+  print_double_in_C(outwi[y_index[i]]);
+  print_line_in_C();
   }
 	return (outwi);
 }
