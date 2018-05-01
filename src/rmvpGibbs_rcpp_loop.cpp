@@ -8,6 +8,10 @@ void print_double_in_C(double beta) {
     Rcout <<  beta << ";";
 }
 
+void print_vec_in_C(vec beta) {  
+    Rcout <<  beta << ";";
+}
+
 void print_int_in_C(int beta) {  
     Rcout <<  beta << ";";
 }
@@ -85,9 +89,9 @@ vec drawwi_mvop(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, v
   vec outwi = w;
   
   for(int i = 0; i < ny; i++){
-	  //print_double_in_C(outwi[y_index[i]]);
-	  //print_double_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[0]);
-	  //print_double_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[1]);
+	  print_double_in_C(outwi[y_index[i]]);
+	  print_double_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[0]);
+	  print_double_in_C(condmom(outwi, mu, sigmai, p, y_index[i]+1)[1]);
 	  
 	  if(i == 0 && y[i] != 100 && i+1 <ny && y[i+1] != 100){
 	  //if(i == 0 && y[i] == 1 && i+1 <ny && y[i+1] != 100){
@@ -121,8 +125,8 @@ vec drawwi_mvop(vec const& w, vec const& mu, mat const& sigmai, int p, ivec y, v
 	  	outwi[y_index[i]] = trunNorm(Cmout[0], Cmout[1], 0.0, 1);
 	  }
 	  
-  //print_double_in_C(outwi[y_index[i]]);
-  //print_line_in_C();
+  print_double_in_C(outwi[y_index[i]]);
+  print_line_in_C();
   }
 	return (outwi);
 }
@@ -149,6 +153,9 @@ vec draww_mvop(vec const& w, vec const& mu, mat const& sigmai, ivec const& y){
 	  
     y_ordered = y.subvec(ind,ind+p-1);
     quicksort(y_ordered, y_subindex, 0, p-1);
+	  
+    print_vec_in_C(w.subvec(ind,ind+p-1));
+    print_vec_in_C(mu.subvec(ind,ind+p-1));
     
     outw.subvec(ind,ind+p-1) = drawwi_mvop(w.subvec(ind,ind+p-1),mu.subvec(ind,ind+p-1),sigmai,p,y_ordered,y_subindex);
   }
@@ -194,6 +201,8 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   //set initial values of w, beta, sigma (or root of inv)
   vec wold = wnew;
   vec betaold = beta0;
+  print_vec_in_C(wold);
+  print_vec_in_C(betaold);
   mat C = chol(solve(trimatu(sigma0),eye(sigma0.n_cols,sigma0.n_cols))); //C is upper triangular root of sigma^-1 (G) = C'C
                                                                          //trimatu interprets the matrix as upper triangular and makes solve more efficient
   
