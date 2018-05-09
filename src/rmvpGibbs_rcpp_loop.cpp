@@ -187,12 +187,12 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
     		if(y[i*p + k] != 100){
       			suma = suma + 1;}}
   	for(int j=0; j<p; j++){
-		// for every observed response, sample in a ordered and uniform fashion between 0 and 10 the utility w
+		// for every observed response, sample in a ordered and uniform fashion between 0 and 5 the utility w
     		if(y[i*p + j] != 100){
-      			wnew[i*p + j] = 10.00001 - 10*(y[i*p + j]-1)/(double)suma;
-		// for every not answered option, sample from negative uniform distribution between 0 and -10
+      			wnew[i*p + j] = 5.00001 - 5*(y[i*p + j]-1)/(double)suma;
+		// for every not answered option, sample from negative uniform distribution between 0 and -5
     		}else{
-      			wnew[i*p + j] = runif(1, -10, 0)[0];}}
+      			wnew[i*p + j] = runif(1, -5, 0)[0];}}
 }
 
   //set initial values of w, beta, sigma (or root of inv)
