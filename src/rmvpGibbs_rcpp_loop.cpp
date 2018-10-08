@@ -279,7 +279,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       
   return List::create(
     Named("betadraw") = betadraw, 
-    Named("sigmadraw") = sigmadraw,
+    Named("sigmadraws") = sigmadraw,
     //Named("wdraw") = wdraw);
     //use to save only the last w draw:
     Named("wdraw") = wnew);
