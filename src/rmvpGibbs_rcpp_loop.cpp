@@ -283,4 +283,5 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
     //Named("wdraw") = wdraw);
     //use to save only the last w draw:
     Named("wdraw") = wnew);
+	
 }
