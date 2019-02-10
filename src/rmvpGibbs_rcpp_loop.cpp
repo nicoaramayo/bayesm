@@ -178,6 +178,12 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
 	
   vec wnew = zeros<vec>(X.n_rows);
   int suma;
+	
+  vec price = zeros<vec>(p);
+  for(int i=0; i<p; i++){
+  	price[i] = X[i][k];
+  }
+  print_vec_in_C(price);
 
   // create initial vector of utilities w
   for(int i=0; i<n; i++){
