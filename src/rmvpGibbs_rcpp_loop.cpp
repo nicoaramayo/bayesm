@@ -180,9 +180,10 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   int suma;
 	
   vec price = zeros<vec>(p);
+  vec cost_shifter = zeros<vec>(p);
   for(int i=0; i<p; i++){
-  	price[i] = X(i,k);
-	Rcout <<  price[i] << ";";
+  	price[i] = X(i,k-1);
+	cost_shifter[i] = X(i,k);
   }
 
   // create initial vector of utilities w
@@ -288,6 +289,8 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
     Named("sigmadraw") = sigmadraw,
     //Named("wdraw") = wdraw);
     //use to save only the last w draw:
-    Named("wdraw") = wnew);
+    Named("wdraw") = wnew,
+    Named("price") = price,
+    Named("cost_shifter") = cost_shifter);
 	
 }
