@@ -182,8 +182,8 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   vec price = zeros<vec>(p);
   vec cost_shifter = zeros<vec>(p);
   for(int i = 0; i < p; i++){
-  	price[i] = X(i,k-1);
-	cost_shifter[i] = X(i,k);
+  	price[i] = X(i,k-2);
+	cost_shifter[i] = X(i,k-1);
   }
 
   // create initial vector of utilities w
