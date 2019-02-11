@@ -167,7 +167,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
                          mat const& V, double nu, vec const& betabar, mat const& A) {
 
   int n = y.size()/p;
-  int k = X.ncols;
+  int k = X.n_cols;
 	
   mat A_mod;  A_mod.eye(k-1,k-1)*0.01;
   
@@ -189,10 +189,10 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
 	cost_shifter[i] = X(i,k-1);
   }
 
-  mat X_copy = zeros<mat>(X.n_rows, X.ncols-1);
+  mat X_copy = zeros<mat>(X.n_rows, X.n_cols-1);
   for(int i = 0; i < X.n_rows; i++){
-	  for(int j = 0; j < X.ncols-1; j++){
-		  if(j == X.ncols-2){
+	  for(int j = 0; j < X.n_cols-1; j++){
+		  if(j == X.n_cols-2){
 			  X_copy(i,j) = 0;
 		  } else{X_copy(i,j) = X(i,j);}
 	  }
@@ -217,7 +217,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
 
   //set initial values of w, beta, sigma (or root of inv)
   vec wold = wnew;
-  vec betaold = beta0.subvec(0,X.ncols - 1);   //update size of beta vector according to modified X matrix
+  vec betaold = beta0.subvec(0,X.n_cols - 1);   //update size of beta vector according to modified X matrix
   //vec betaold = beta0;
   mat C = chol(solve(trimatu(sigma0),eye(sigma0.n_cols,sigma0.n_cols))); //C is upper triangular root of sigma^-1 (G) = C'C
                                                                          //trimatu interprets the matrix as upper triangular and makes solve more efficient
@@ -225,7 +225,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   mat sigmai, zmat, epsilon, S, IW, ucholinv, VSinv; 
   vec betanew;
   List W;
-  int k = X_copy.ncols;  //reassign k
+  k = X_copy.n_cols;  //reassign k
   
   // start main iteration loop
   int mkeep = 0;
