@@ -167,7 +167,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
                          mat const& V, double nu, vec const& betabar, mat const& A) {
 
   int n = y.size()/p;
-  int k = X.n_cols;
+  int k = X.ncols;
 	
   mat A_mod;  A_mod.eye(k-1,k-1)*0.01;
   
@@ -189,10 +189,10 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
 	cost_shifter[i] = X(i,k-1);
   }
 
-  mat X_copy = zeros<mat>(X.n_rows, X.n_cols-1);
+  mat X_copy = zeros<mat>(X.n_rows, X.ncols-1);
   for(int i = 0; i < X.n_rows; i++){
-	  for(int j = 0; j < X.n_cols-1; j++){
-		  if(j == X.n_cols-2){
+	  for(int j = 0; j < X.ncols-1; j++){
+		  if(j == X.ncols-2){
 			  X_copy(i,j) = 0;
 		  } else{X_copy(i,j) = X(i,j);}
 	  }
@@ -225,6 +225,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   mat sigmai, zmat, epsilon, S, IW, ucholinv, VSinv; 
   vec betanew;
   List W;
+  int k = X_copy.ncols;  //reassign k
   
   // start main iteration loop
   int mkeep = 0;
@@ -259,8 +260,8 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       zmat = C*zmat;
       zmat.reshape(X_copy.n_rows,k+1);
       
-      vec betabar_mod = betabar.subvec(0,X.ncols - 1);   //update size of beta vector according to modified X matrix
-      betanew = breg(zmat(span::all,0),zmat(span::all,span(1,k-1)),betabar_mod,A_mod);
+      vec betabar_mod = betabar.subvec(0,k);   //update size of beta vector according to modified X matrix
+      betanew = breg(zmat(span::all,0),zmat(span::all,span(1,k)),betabar_mod,A_mod);
 	   
       //draw sigmai given w and beta
       epsilon = wnew-X_copy*betanew;
