@@ -217,7 +217,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
 
   //set initial values of w, beta, sigma (or root of inv)
   vec wold = wnew;
-  vec betaold = beta0.subvec(0,X.n_cols - 1);   //update size of beta vector according to modified X matrix
+  vec betaold = beta0.subvec(0,X.n_cols - 2);   //update size of beta vector according to modified X matrix
   //vec betaold = beta0;
   mat C = chol(solve(trimatu(sigma0),eye(sigma0.n_cols,sigma0.n_cols))); //C is upper triangular root of sigma^-1 (G) = C'C
                                                                          //trimatu interprets the matrix as upper triangular and makes solve more efficient
