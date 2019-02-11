@@ -165,14 +165,17 @@ vec draww_mvop(vec const& w, vec const& mu, mat const& sigmai, ivec const& y){
 List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p, 
                          ivec const& y, mat const& X, vec const& beta0, mat const& sigma0, 
                          mat const& V, double nu, vec const& betabar, mat const& A) {
-                       
 
   int n = y.size()/p;
   int k = X.n_cols;
+	
+  mat A_mod;  A_mod.eye(k-1,k-1)*0.01;
   
   //allocate space for draws
   mat sigmadraw = zeros<mat>(R/keep, p*p);
-  mat betadraw = zeros<mat>(R/keep,k);
+  //mat betadraw = zeros<mat>(R/keep,k);
+  mat betadraw = zeros<mat>(R/keep,k-1);  //betas without considering the cost shifters
+	
   //mat wdraw = zeros<mat>(R/keep,y.size());
   //mat wdraw = zeros<mat>(R/10,y.size());
 	
@@ -185,6 +188,16 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   	price[i] = X(i,k-2);
 	cost_shifter[i] = X(i,k-1);
   }
+
+  mat X_copy = zeros<mat>(X.n_rows, X.n_cols-1);
+  for(int i = 0; i < X.n_rows; i++){
+	  for(int j = 0; j < X.n_cols-1; j++){
+		  if(j == X.n_cols-2){
+			  X_copy(i,j) = 0;
+		  } else{X_copy(i,j) = X(i,j);}
+	  }
+  }
+		  
 
   // create initial vector of utilities w
   for(int i=0; i<n; i++){
@@ -204,7 +217,8 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
 
   //set initial values of w, beta, sigma (or root of inv)
   vec wold = wnew;
-  vec betaold = beta0;
+  vec betaold = beta0.subvec(0,X.ncols - 1);   //update size of beta vector according to modified X matrix
+  //vec betaold = beta0;
   mat C = chol(solve(trimatu(sigma0),eye(sigma0.n_cols,sigma0.n_cols))); //C is upper triangular root of sigma^-1 (G) = C'C
                                                                          //trimatu interprets the matrix as upper triangular and makes solve more efficient
   
@@ -234,21 +248,22 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       // create a copy of the vector of responses as to not modify the original order of the vector
       ivec y_copy = ivec(y);
 
-      wnew = draww_mvop(wold,X*betaold,sigmai,y_copy);
+      wnew = draww_mvop(wold,X_copy*betaold,sigmai,y_copy);
 
       //draw beta given w(rep) and sigma(rep-1)
       //  note:  if Sigma^-1 (G) = C'C then Var(Ce)=CSigmaC' = I
       //  first, transform w_i = X_ibeta + e_i by premultiply by C
       
-      zmat = join_rows(wnew,X); //similar to cbind(wnew,X)
+      zmat = join_rows(wnew,X_copy); //similar to cbind(wnew,X)
       zmat.reshape(p,n*(k+1));
       zmat = C*zmat;
-      zmat.reshape(X.n_rows,k+1);
+      zmat.reshape(X_copy.n_rows,k+1);
       
-      betanew = breg(zmat(span::all,0),zmat(span::all,span(1,k)),betabar,A);
+      vec betabar_mod = betabar.subvec(0,X.ncols - 1);   //update size of beta vector according to modified X matrix
+      betanew = breg(zmat(span::all,0),zmat(span::all,span(1,k-1)),betabar_mod,A_mod);
 	   
       //draw sigmai given w and beta
-      epsilon = wnew-X*betanew;
+      epsilon = wnew-X_copy*betanew;
       epsilon.reshape(p,n);  
       S = epsilon*trans(epsilon);
       
@@ -290,7 +305,6 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
     //Named("wdraw") = wdraw);
     //use to save only the last w draw:
     Named("wdraw") = wnew,
-    Named("price") = price,
-    Named("cost_shifter") = cost_shifter);
+    Named("modified_X") = X_copy);
 	
 }
