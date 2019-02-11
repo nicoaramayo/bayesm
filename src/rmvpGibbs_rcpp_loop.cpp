@@ -180,8 +180,9 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   int suma;
 	
   vec price = zeros<vec>(p);
+  mat X_copy = mat(X);
   for(int i=0; i<p; i++){
-  	price[i] = X[i][k];
+  	price[i] = X_copy[i][k];
   }
   print_vec_in_C(price);
 
