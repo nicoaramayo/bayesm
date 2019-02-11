@@ -189,7 +189,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   vec price = zeros<vec>(p);
   vec cost_shifter = zeros<vec>(p);
   for(int i = 0; i < p; i++){
-  	const double* Xi = X<double>(i);
+  	const double* Xi = X(i);
   	price[i] = Xi[k-1];
 	cost_shifter[i] = Xi[k];
   }
