@@ -179,12 +179,12 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   vec wnew = zeros<vec>(X.n_rows);
   int suma;
 	
+  double X_copy = X;	
   vec price = zeros<vec>(p);
   vec cost_shifter = zeros<vec>(p);
   for(int i = 0; i < p; i++){
-  	const double Xi = X(i);
-  	price[i] = Xi[k-1];
-	cost_shifter[i] = Xi[k];
+  	price[i] = X_copy[i][k-1];
+	cost_shifter[i] = X_copy[i][k];
   }
 
   // create initial vector of utilities w
