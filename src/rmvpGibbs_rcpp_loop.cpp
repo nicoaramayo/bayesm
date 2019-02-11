@@ -179,17 +179,10 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   vec wnew = zeros<vec>(X.n_rows);
   int suma;
 	
-  for(int i = 0; i < M.rows; i++)
-{
-    const double* Mi = M.ptr<double>(i);
-    for(int j = 0; j < M.cols; j++)
-        sum += std::max(Mi[j], 0.);
-}
-	
   vec price = zeros<vec>(p);
   vec cost_shifter = zeros<vec>(p);
   for(int i = 0; i < p; i++){
-  	const double* Xi = X(i);
+  	const double Xi = X(i);
   	price[i] = Xi[k-1];
 	cost_shifter[i] = Xi[k];
   }
