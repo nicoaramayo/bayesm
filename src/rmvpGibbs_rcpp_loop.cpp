@@ -260,7 +260,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       zmat = C*zmat;
       zmat.reshape(X_copy.n_rows,k+1);
       
-      vec betabar_mod = betabar.subvec(0,k);   //update size of beta vector according to modified X matrix
+      vec betabar_mod = betabar.subvec(0,k-1);   //update size of beta vector according to modified X matrix
       betanew = breg(zmat(span::all,0),zmat(span::all,span(1,k)),betabar_mod,A_mod);  //A prior modified to A_mod, betabar also updated
 	   
       //draw sigmai given w and beta
