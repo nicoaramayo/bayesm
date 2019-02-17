@@ -169,7 +169,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   int n = y.size()/p;
   int k = X.n_cols;
 	
-  mat A_mod;  A_mod.eye(k-1,k-1)*0.01;
+  mat A_mod;  A_mod.eye(k-1,k-1)*0.01;  //edited for BSSD
   
   //allocate space for draws
   mat sigmadraw = zeros<mat>(R/keep, p*p);
@@ -190,10 +190,10 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   }
 
   mat X_copy = zeros<mat>(X.n_rows, X.n_cols-1);
-  for(int i = 0; i < X.n_rows; i++){
-	  for(int j = 0; j < X.n_cols-1; j++){
-		  if(j == X.n_cols-2){
-			  X_copy(i,j) = 0;
+  for(int i = 0; i < X_copy.n_rows; i++){
+	  for(int j = 0; j < X.n_cols-1; j++){     //do not go through the last column, as it contains the cost shifters
+		  if(j == X.n_cols-2){             // if I'm at the price column
+			  X_copy(i,j) = 0;         //initialize the price variable at 0
 		  } else{X_copy(i,j) = X(i,j);}
 	  }
   }
@@ -217,7 +217,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
 
   //set initial values of w, beta, sigma (or root of inv)
   vec wold = wnew;
-  vec betaold = beta0.subvec(0,X.n_cols - 2);   //update size of beta vector according to modified X matrix
+  vec betaold = beta0.subvec(0,X_copy.n_cols);   //update size of beta vector according to modified X matrix
   //vec betaold = beta0;
   mat C = chol(solve(trimatu(sigma0),eye(sigma0.n_cols,sigma0.n_cols))); //C is upper triangular root of sigma^-1 (G) = C'C
                                                                          //trimatu interprets the matrix as upper triangular and makes solve more efficient
@@ -261,7 +261,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       zmat.reshape(X_copy.n_rows,k+1);
       
       vec betabar_mod = betabar.subvec(0,k);   //update size of beta vector according to modified X matrix
-      betanew = breg(zmat(span::all,0),zmat(span::all,span(1,k)),betabar_mod,A_mod);
+      betanew = breg(zmat(span::all,0),zmat(span::all,span(1,k)),betabar_mod,A_mod);  //A prior modified to A_mod, betabar also updated
 	   
       //draw sigmai given w and beta
       epsilon = wnew-X_copy*betanew;
