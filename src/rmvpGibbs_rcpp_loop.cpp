@@ -1,6 +1,6 @@
 #include "bayesm.h"
  
-//---------------------------------EDITED FOR MULTIVARIATE ORDERED PROBIT GIBBS SAMPLER ------------------------------------
+//---------EDITED FOR MULTIVARIATE ORDERED PROBIT GIBBS SAMPLER & BAYESIAN SIMULTANEOUS DEMAND AND SUPPLY ESTIMATION -------
 
 //EXTRA FUNCTIONS SPECIFIC TO THE MAIN FUNCTION--------------------------------------------
 
@@ -160,6 +160,31 @@ vec draww_mvop(vec const& w, vec const& mu, mat const& sigmai, ivec const& y){
   return (outw);
 }
 
+
+vec price_sampler(vec const& sigma_s, vec const& price_s, vec const& fo_demand_s, vec const& demand_s,
+		  vec const& gamma, vec const& z_s, vec const& fo_cost_s){
+  //conditional density of price for bayesian simultaneous demand and supply estimation
+
+  vec out_price = zeros<vec>(1);
+	
+  out_price = 1/(sqrt(2*pi*sigma_s))*exp(-1/(2*sigma_s)*(log(price_s + pow(fo_demand_s, -1)*demand_s)) - dot(gamma,z_s))*eps(fo_cost_s);
+	
+  return (out_price);
+}	
+
+vec expected_demand(vec const& beta, mat const& X, vec const& sigma_ss){
+  //expected demand for the multivariate ordered probit
+
+  vec demand_s = zeros<vec>(1);
+	
+  for(int i = 0; i < X.n_rows; i++){
+	  demand_s = demand_s + exp(2*sqrt(2/pi)*dot(beta,X.row(i))/sigma_ss)/(1 + exp(2*sqrt(2/pi)*dot(beta,X.row(i))/sigma_ss))
+  }
+	
+  return (demand_s);
+}	
+	
+
 //MAIN FUNCTION---------------------------------------------------------------------------------------
 //[[Rcpp::export]]
 List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p, 
@@ -168,6 +193,8 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
 
   int n = y.size()/p;
   int k = X.n_cols;
+	
+  vec demand_s = zeros<vec>(1);
 	
   mat A_mod;  A_mod.eye(k-1,k-1)*0.01;  //edited for BSSD
   
@@ -274,6 +301,9 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       
       W = rwishart(nu+n,VSinv);
       C = as<mat>(W["C"]); //conversion from Rcpp to Armadillo requires explict declaration of variable type using as<>
+	    
+	    
+      demand_s = expected_demand(betanew, X_copy, sigmai(1,1));
       
       //print time to completion
       if (nprint>0) if ((rep+1)%nprint==0) infoMcmcTimer(rep, R);
@@ -306,6 +336,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
     //Named("wdraw") = wdraw);
     //use to save only the last w draw:
     Named("wdraw") = wnew,
-    Named("modified_X") = X_copy);
+    Named("modified_X") = X_copy,
+    Named("expected_demand") = demand_s);
 	
 }
