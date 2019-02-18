@@ -172,7 +172,7 @@ vec price_sampler(vec const& sigma_s, vec const& price_s, vec const& fo_demand_s
   return (out_price);
 }	
 
-vec expected_demand(vec const& beta, mat const& X, vec const& sigma_ss){
+vec expected_demand(vec const& beta, mat const& X, double sigma_ss){
   //expected demand for the multivariate ordered probit
 
   vec demand_s = zeros<vec>(1);
