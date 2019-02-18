@@ -180,7 +180,7 @@ vec expected_demand(vec const& beta, mat const& X, double sigma_ss){
   double pi = 3.141592653589793238462643383279502884;
 	
   for(int i = 0; i < X.n_rows; i++){
-	  demand_s = demand_s + exp(2*sqrt(2/pi)*dot(beta,X.row(i))/sigma_ss)/(1 + exp(2*sqrt(2/pi)*dot(beta,X.row(i))/sigma_ss))
+	  demand_s = demand_s + exp(2*sqrt(2/pi)*dot(beta,X.row(i))/sigma_ss)/(1 + exp(2*sqrt(2/pi)*dot(beta,X.row(i))/sigma_ss));
   }
 	
   return (demand_s);
