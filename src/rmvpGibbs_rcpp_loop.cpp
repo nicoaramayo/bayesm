@@ -180,13 +180,29 @@ vec expected_demand(vec const& beta, mat const& X, mat const& sigmai){
   double pi = 3.1415926;
 	
   for(int s = 0; s < sigmai.n_cols; s++){
-  	for(int i = 0; i < X.n_rows; i++){
-		demand[s] = demand[s] + exp(2*sqrt(2/pi)*dot(beta,X.row(i))/sigmai(s,s)) /
-			(1 + exp(2*sqrt(2/pi)*dot(beta,X.row(i))/sigmai(s,s)));
+  	for(int i = 0; i < X.n_rows/sigmai.n_cols; i++){
+		demand[s] = demand[s] + exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)) /
+			(1 + exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)));
   	}
   }
   return (demand);
-}	
+}
+
+vec first_order_demand(vec const& beta, mat const& X, mat const& sigmai){
+  //expected demand for the multivariate ordered probit
+
+  vec fo_demand = zeros<vec>(sigmai.n_cols);
+  double pi = 3.1415926;
+	
+  for(int s = 0; s < sigmai.n_cols; s++){
+  	for(int i = 0; i < X.n_rows/sigmai.n_cols; i++){
+		fo_demand[s] = fo_demand[s] + (exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)) * 
+					       sigmai(s,s) * dot(beta[4],X.row(i*p + s)[4]))/
+			pow((1 + exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)), 2);
+  	}
+  }
+  return (fo_demand);
+}
 	
 
 //MAIN FUNCTION---------------------------------------------------------------------------------------
@@ -199,6 +215,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   int k = X.n_cols;
 	
   vec demand = zeros<vec>(p);
+  vec fo_demand = zeros<vec>(p);
 	
   mat A_mod;  A_mod.eye(k-1,k-1)*0.01;  //edited for BSSD
   
@@ -308,6 +325,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
 	    
 	    
       demand = expected_demand(betanew, X_copy, sigmai);
+      fo_demand = first_order_demand(betanew, X_copy, sigmai);
       
       //print time to completion
       if (nprint>0) if ((rep+1)%nprint==0) infoMcmcTimer(rep, R);
@@ -341,6 +359,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
     //use to save only the last w draw:
     Named("wdraw") = wnew,
     Named("modified_X") = X_copy,
-    Named("expected_demand") = demand);
+    Named("expected_demand") = demand,
+    Named("fo_demand") = fo_demand);
 	
 }
