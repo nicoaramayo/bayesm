@@ -328,7 +328,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
 	    
 	    
       demand = expected_demand(betanew, X_copy, sigmai);
-      fo_demand = first_order_demand(betanew, X_copy, sigmai);
+      //fo_demand = first_order_demand(betanew, X_copy, sigmai);
       
       //print time to completion
       if (nprint>0) if ((rep+1)%nprint==0) infoMcmcTimer(rep, R);
@@ -362,7 +362,8 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
     //use to save only the last w draw:
     Named("wdraw") = wnew,
     Named("modified_X") = X_copy,
-    Named("expected_demand") = demand,
-    Named("fo_demand") = fo_demand);
+    //Named("expected_demand") = demand,
+    //Named("fo_demand") = fo_demand);
+	  Named("expected_demand") = demand);
 	
 }
