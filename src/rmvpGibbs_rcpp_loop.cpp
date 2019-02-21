@@ -173,17 +173,19 @@ vec price_sampler(vec const& sigma_s, vec const& price_s, vec const& fo_demand_s
   return (out_price);
 }	
 
-vec expected_demand(vec const& beta, mat const& X, double sigma_ss){
+vec expected_demand(vec const& beta, mat const& X, mat const& sigmai){
   //expected demand for the multivariate ordered probit
 
-  vec demand_s = zeros<vec>(1);
-  double pi = 3.141592653589793238462643383279502884;
+  vec demand = zeros<vec>(sigmai.n_cols);
+  double pi = 3.1415926;
 	
-  for(int i = 0; i < X.n_rows; i++){
-	  demand_s = demand_s + exp(2*sqrt(2/pi)*dot(beta,X.row(i))/sigma_ss)/(1 + exp(2*sqrt(2/pi)*dot(beta,X.row(i))/sigma_ss));
+  for(int s = 0; s < sigmai.n_cols; s++){
+  	for(int i = 0; i < X.n_rows; i++){
+		demand[s] = demand[s] + exp(2*sqrt(2/pi)*dot(beta,X.row(i))/sigmai(s,s)) /
+			(1 + exp(2*sqrt(2/pi)*dot(beta,X.row(i))/sigmai(s,s)));
+  	}
   }
-	
-  return (demand_s);
+  return (demand);
 }	
 	
 
@@ -305,7 +307,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       C = as<mat>(W["C"]); //conversion from Rcpp to Armadillo requires explict declaration of variable type using as<>
 	    
 	    
-      demand_s = expected_demand(betanew, X_copy, sigmai(1,1));
+      demand = expected_demand(betanew, X_copy, sigmai);
       
       //print time to completion
       if (nprint>0) if ((rep+1)%nprint==0) infoMcmcTimer(rep, R);
@@ -339,6 +341,6 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
     //use to save only the last w draw:
     Named("wdraw") = wnew,
     Named("modified_X") = X_copy,
-    Named("expected_demand") = demand_s);
+    Named("expected_demand") = demand);
 	
 }
