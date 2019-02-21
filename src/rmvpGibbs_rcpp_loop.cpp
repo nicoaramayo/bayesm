@@ -199,7 +199,7 @@ vec first_order_demand(vec const& beta, mat const& X, mat const& sigmai){
   for(int s = 0; s < p; s++){
   	for(int i = 0; i < X.n_rows/p; i++){
 		fo_demand[s] = fo_demand[s] + (exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)) * 
-					       sigmai(s,s) * beta(4)*X(i*p + s, 4)) /
+					       sigmai(s,s) * beta(3)*X(i*p + s, 3)) /
 			pow(1 + exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)), 2);
   	}
   }
