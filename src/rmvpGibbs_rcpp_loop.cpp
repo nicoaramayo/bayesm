@@ -198,7 +198,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   int n = y.size()/p;
   int k = X.n_cols;
 	
-  vec demand_s = zeros<vec>(1);
+  vec demand = zeros<vec>(p);
 	
   mat A_mod;  A_mod.eye(k-1,k-1)*0.01;  //edited for BSSD
   
