@@ -166,7 +166,7 @@ vec price_sampler(vec const& sigma_s, vec const& price_s, vec const& fo_demand_s
   //conditional density of price for bayesian simultaneous demand and supply estimation
 
   vec out_price = zeros<vec>(1);
-  double pi = 3.141592653589793238462643383279502884;
+  double pi = 3.1415926;
 	
   out_price = 1/(sqrt(2*pi*sigma_s))*exp(-1/(2*sigma_s)*(log(price_s + pow(fo_demand_s, -1)*demand_s)) - dot(gamma,z_s))*eps(fo_cost_s);
 	
@@ -175,12 +175,13 @@ vec price_sampler(vec const& sigma_s, vec const& price_s, vec const& fo_demand_s
 
 vec expected_demand(vec const& beta, mat const& X, mat const& sigmai){
   //expected demand for the multivariate ordered probit
-
-  vec demand = zeros<vec>(sigmai.n_cols);
+ 
+  int p = sigmai.n_cols;
+  vec demand = zeros<vec>(p);
   double pi = 3.1415926;
 	
-  for(int s = 0; s < sigmai.n_cols; s++){
-  	for(int i = 0; i < X.n_rows/sigmai.n_cols; i++){
+  for(int s = 0; s < p; s++){
+  	for(int i = 0; i < X.n_rows/p; i++){
 		demand[s] = demand[s] + exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)) /
 			(1 + exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)));
   	}
@@ -191,11 +192,12 @@ vec expected_demand(vec const& beta, mat const& X, mat const& sigmai){
 vec first_order_demand(vec const& beta, mat const& X, mat const& sigmai){
   //expected demand for the multivariate ordered probit
 
-  vec fo_demand = zeros<vec>(sigmai.n_cols);
+  int p = sigmai.n_cols;
+  vec fo_demand = zeros<vec>(p);
   double pi = 3.1415926;
 	
-  for(int s = 0; s < sigmai.n_cols; s++){
-  	for(int i = 0; i < X.n_rows/sigmai.n_cols; i++){
+  for(int s = 0; s < p; s++){
+  	for(int i = 0; i < X.n_rows/p; i++){
 		fo_demand[s] = fo_demand[s] + (exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)) * 
 					       sigmai(s,s) * dot(beta[4],X.row(i*p + s)[4]))/
 			pow((1 + exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)), 2);
