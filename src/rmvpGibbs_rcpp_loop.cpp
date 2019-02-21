@@ -193,13 +193,14 @@ vec first_order_demand(vec const& beta, mat const& X, mat const& sigmai){
   //expected demand for the multivariate ordered probit
 
   int p = sigmai.n_cols;
+  int k = beta.n_cols;
   vec fo_demand = zeros<vec>(p);
   double pi = 3.1415926;
 	
   for(int s = 0; s < p; s++){
   	for(int i = 0; i < X.n_rows/p; i++){
 		fo_demand[s] = fo_demand[s] + (exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)) * 
-					       sigmai(s,s) * beta(p-1)*X(i*p + s, p-1)) /
+					       sigmai(s,s) * beta(k-1)*X(i*p + s, k-1)) /
 			pow(1 + exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)), 2);
   	}
   }
