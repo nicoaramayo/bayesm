@@ -191,6 +191,7 @@ vec expected_demand(vec const& beta, mat const& X, mat const& sigmai){
 
 vec first_order_demand(vec const& beta, mat const& X, mat const& sigmai){
   //expected demand for the multivariate ordered probit
+  // version without price interactions  (with price interaction in column k-1 is beta(k-1)*X(i*p + s, k-1))
 
   int p = sigmai.n_cols;
   int k = beta.n_cols;
@@ -200,11 +201,53 @@ vec first_order_demand(vec const& beta, mat const& X, mat const& sigmai){
   for(int s = 0; s < p; s++){
   	for(int i = 0; i < X.n_rows/p; i++){
 		fo_demand[s] = fo_demand[s] + (exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)) * 
-					       sigmai(s,s) * beta(k-1)*X(i*p + s, k-1)) /
+					       sigmai(s,s) * beta(k-1)) /
 			pow(1 + exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)), 2);
   	}
   }
   return (fo_demand);
+}
+
+vec second_order_demand(vec const& beta, mat const& X, mat const& sigmai){
+  //expected demand for the multivariate ordered probit
+  // version without price interactions
+
+  int p = sigmai.n_cols;
+  int k = beta.n_cols;
+  vec so_demand = zeros<vec>(p);
+  double pi = 3.1415926;
+	
+  for(int s = 0; s < p; s++){
+  	for(int i = 0; i < X.n_rows/p; i++){
+		so_demand[s] = so_demand[s] - (pow(sigmai(s,s), 2) * 2 * sqrt(2/pi)*pow(beta(k-1), 2) * 
+			       exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s))) /
+			       pow(1 + exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)), 3);
+  	}
+  }
+  return (so_demand);
+}
+
+vec first_order_costshifter(vec const& beta, mat const& X, mat const& sigmai){
+  //expected demand for the multivariate ordered probit
+  // version without price interactions
+
+  int p = sigmai.n_cols;
+  int k = beta.n_cols;
+  vec fo_costshifters = zeros<vec>(p);
+  vec demand = zeros<vec>(p);
+  vec fo_demand = zeros<vec>(p);
+  vec so_demand = zeros<vec>(p);
+	
+  demand = expected_demand(beta, X, sigmai);
+  fo_demand = first_order_demand(beta, X, sigmai);
+  so_demand = second_order_demand(beta, X, sigmai);
+
+  for(int s = 0; s < p; s++){
+	fo_costshifters[s] = (2 - pow(fo_demand[s], -2) * so_demand[s] * demand[s]) /
+		             (X(s, k-1) + pow(fo_demand[s], -1) * demand[s]);
+  	}
+  }
+  return (fo_costshifters);
 }
 	
 
@@ -219,6 +262,8 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
 	
   vec demand = zeros<vec>(p);
   vec fo_demand = zeros<vec>(p);
+  vec so_demand = zeros<vec>(p);
+  vec fo_cost = zeros<vec>(p);
 	
   mat A_mod;  A_mod.eye(k-1,k-1)*0.01;  //edited for BSSD
   
@@ -330,6 +375,8 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
 	    
       demand = expected_demand(betanew, X_copy, sigmai);
       fo_demand = first_order_demand(betanew, X_copy, sigmai);
+      so_demand = second_order_demand(betanew, X_copy, sigmai);
+      fo_cost = first_order_costshifter(betanew, X_copy, sigmai);
       
       //print time to completion
       if (nprint>0) if ((rep+1)%nprint==0) infoMcmcTimer(rep, R);
@@ -364,6 +411,8 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
     Named("wdraw") = wnew,
     Named("modified_X") = X_copy,
     Named("expected_demand") = demand,
-    Named("fo_demand") = fo_demand);
+    Named("fo_demand") = fo_demand,
+    Named("so_demand") = so_demand,
+    Named("fo_cost") = fo_cost);
 	
 }
