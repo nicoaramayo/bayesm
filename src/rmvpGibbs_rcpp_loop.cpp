@@ -246,7 +246,6 @@ vec first_order_costshifter(vec const& beta, mat const& X, mat const& sigmai){
 	fo_costshifters[s] = (2 - pow(fo_demand[s], -2) * so_demand[s] * demand[s]) /
 		             (X(s, k-1) + pow(fo_demand[s], -1) * demand[s]);
   	}
-  }
   return (fo_costshifters);
 }
 	
