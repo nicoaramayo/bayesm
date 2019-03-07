@@ -165,13 +165,17 @@ vec price_density_s(vec const& sigma_s, vec const& price_s, vec const& fo_demand
 		  vec const& gamma, vec const& z_s, vec const& fo_cost_s){
   //density of price for bayesian simultaneous demand and supply estimation
 
-  double out_price_density;
+  int p = sigmai.n_cols;
+  vec price_density = zeros<vec>(p);
   double pi = 3.1415926;
 	
-  out_price_density = 1/(sqrt(2*pi*sigma_s))*exp(-1/(2*sigma_s)*(log(price_s + pow(fo_demand_s, -1)*demand_s))
+  for(int s=0; s<p; s++){
+      	price_density[s] = 1/(sqrt(2*pi*sigma_s))*exp(-1/(2*sigma_s)*(log(price_s + pow(fo_demand_s, -1)*demand_s))
 						 - dot(gamma,z_s))*eps(fo_cost_s);
+      }
 	
-  return (out_price_density);
+	
+  return (price_density);
 }	
 
 vec expected_demand(vec const& beta, mat const& X, mat const& sigmai){
@@ -292,12 +296,15 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
 	cost_shifter[i] = X(i,k-1);
   }
 	
-  int xrows = X_copy.n_rows;
+  int price_column = X.n_cols-2;
+  int cost_shifter_column = X.n_cols-1;
 
   mat X_copy = zeros<mat>(X.n_rows, X.n_cols-1);
+  int xrows = X_copy.n_rows;
+	
   for(int i = 0; i < xrows; i++){
-	  for(int j = 0; j < X.n_cols-1; j++){     //do not go through the last column, as it contains the cost shifters
-		  if(j == X.n_cols-2){             // if I'm at the price column
+	  for(int j = 0; j < cost_shifter_column; j++){     //do not go through the last column, as it contains the cost shifters
+		  if(j == price_column){             // if I'm at the price column
 			  //X_copy(i,j) = 0;         //initialize the price variable at 0
 			  X_copy(i,j) = X(i,j);
 		  } else{X_copy(i,j) = X(i,j);}
@@ -387,9 +394,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       fo_demand = first_order_demand(betanew, X_copy, sigmai);
       so_demand = second_order_demand(betanew, X_copy, sigmai);
       fo_cost = first_order_costshifter(betanew, X_copy, sigmai);
-      for(int s=0; s<p; s++){
-      	price_density[s] = price_density_s(sigma_s, price[s], fo_demand[s], demand[s], gamma, cost_shifter[s], fo_cost[s]);
-      }
+      price_density = price_density_s(sigma_s, price, fo_demand, demand, gamma, cost_shifter, fo_cost);
       
       //print time to completion
       if (nprint>0) if ((rep+1)%nprint==0) infoMcmcTimer(rep, R);
