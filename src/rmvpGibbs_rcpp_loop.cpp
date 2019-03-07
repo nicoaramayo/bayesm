@@ -161,7 +161,7 @@ vec draww_mvop(vec const& w, vec const& mu, mat const& sigmai, ivec const& y){
 }
 
 
-vec price_density(double sigma_s, vec const& price_s, vec const& fo_demand_s, vec const& demand_s,
+vec price_density_s(double sigma_s, vec const& price_s, vec const& fo_demand_s, vec const& demand_s,
 		  vec const& gamma, vec const& z_s, vec const& fo_cost_s){
   //density of price for bayesian simultaneous demand and supply estimation
 
@@ -258,7 +258,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
 
   int n = y.size()/p;
   int k = X.n_cols;
-  int z = 1; //set number of cost shifters manually
+  //int z = 1; //set number of cost shifters manually
 	
   vec demand = zeros<vec>(p);
   vec fo_demand = zeros<vec>(p);
@@ -267,6 +267,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   //vec gamma = zeros<vec>(z);
   vec gamma = 1;
   double sigma_s = 1;
+  vec price_density = zeros<vec>(p);
 	
   mat A_mod;  A_mod.eye(k-1,k-1)*0.01;  //edited for BSSD
   
@@ -381,7 +382,9 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       fo_demand = first_order_demand(betanew, X_copy, sigmai);
       so_demand = second_order_demand(betanew, X_copy, sigmai);
       fo_cost = first_order_costshifter(betanew, X_copy, sigmai);
-      price_density = price_density(sigma_s, price, fo_demand, demand, gamma, cost_shifter, fo_cost);
+      for(int s=0; s<p; s++){
+      	price_density[s] = price_density(sigma_s, price[s], fo_demand[s], demand[s], gamma, cost_shifter, fo_cost[s]);
+      }
       
       //print time to completion
       if (nprint>0) if ((rep+1)%nprint==0) infoMcmcTimer(rep, R);
@@ -418,6 +421,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
     Named("expected_demand") = demand,
     Named("fo_demand") = fo_demand,
     Named("so_demand") = so_demand,
-    Named("fo_cost") = fo_cost);
+    Named("fo_cost") = fo_cost,
+    Named("price_density") = price_density);
 	
 }
