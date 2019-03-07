@@ -161,7 +161,7 @@ vec draww_mvop(vec const& w, vec const& mu, mat const& sigmai, ivec const& y){
 }
 
 
-vec price_density_s(double sigma_s, vec const& price_s, vec const& fo_demand_s, vec const& demand_s,
+vec price_density_s(vec const& sigma_s, vec const& price_s, vec const& fo_demand_s, vec const& demand_s,
 		  vec const& gamma, vec const& z_s, vec const& fo_cost_s){
   //density of price for bayesian simultaneous demand and supply estimation
 
@@ -180,9 +180,10 @@ vec expected_demand(vec const& beta, mat const& X, mat const& sigmai){
   int p = sigmai.n_cols;
   vec demand = zeros<vec>(p);
   double pi = 3.1415926;
+  int n_students = int(X.n_rows/p);
 	
   for(int s = 0; s < p; s++){
-  	for(int i = 0; i < X.n_rows/p; i++){
+  	for(int i = 0; i < n_students; i++){
 		demand[s] = demand[s] + exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)) /
 			(1 + exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)));
   	}
@@ -198,9 +199,10 @@ vec first_order_demand(vec const& beta, mat const& X, mat const& sigmai){
   int k = beta.n_cols;
   vec fo_demand = zeros<vec>(p);
   double pi = 3.1415926;
+  int n_students = int(X.n_rows/p);
 	
   for(int s = 0; s < p; s++){
-  	for(int i = 0; i < X.n_rows/p; i++){
+  	for(int i = 0; i < n_students; i++){
 		fo_demand[s] = fo_demand[s] + (exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)) * 
 					       sigmai(s,s) * beta(k-1)) /
 			pow(1 + exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)), 2);
@@ -265,8 +267,8 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   vec so_demand = zeros<vec>(p);
   vec fo_cost = zeros<vec>(p);
   //vec gamma = zeros<vec>(z);
-  vec gamma = p/p;
-  double sigma_s = p/p;
+  vec gamma = ones<vec>(1);
+  vec sigma_s = ones<vec>(1);
   vec price_density = zeros<vec>(p);
 	
   mat A_mod;  A_mod.eye(k-1,k-1)*0.01;  //edited for BSSD
