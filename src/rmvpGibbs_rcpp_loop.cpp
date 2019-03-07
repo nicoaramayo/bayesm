@@ -165,7 +165,7 @@ vec price_density_s(vec const& sigma_s, vec const& price_s, vec const& fo_demand
 		  vec const& gamma, vec const& z_s, vec const& fo_cost_s){
   //density of price for bayesian simultaneous demand and supply estimation
 
-  vec out_price_density = zeros<vec>(1);
+  double out_price_density;
   double pi = 3.1415926;
 	
   out_price_density = 1/(sqrt(2*pi*sigma_s))*exp(-1/(2*sigma_s)*(log(price_s + pow(fo_demand_s, -1)*demand_s))
@@ -219,9 +219,10 @@ vec second_order_demand(vec const& beta, mat const& X, mat const& sigmai){
   int k = beta.n_cols;
   vec so_demand = zeros<vec>(p);
   double pi = 3.1415926;
+  int n_students = int(X.n_rows/p);
 	
   for(int s = 0; s < p; s++){
-  	for(int i = 0; i < X.n_rows/p; i++){
+  	for(int i = 0; i < n_students; i++){
 		so_demand[s] = so_demand[s] - (pow(sigmai(s,s), 2) * 2 * sqrt(2/pi)*pow(beta(k-1), 2) * 
 			       exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s))) /
 			       pow(1 + exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)), 3);
@@ -290,9 +291,11 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   	price[i] = X(i,k-2);
 	cost_shifter[i] = X(i,k-1);
   }
+	
+  int xrows = X_copy.n_rows;
 
   mat X_copy = zeros<mat>(X.n_rows, X.n_cols-1);
-  for(int i = 0; i < X_copy.n_rows; i++){
+  for(int i = 0; i < xrows; i++){
 	  for(int j = 0; j < X.n_cols-1; j++){     //do not go through the last column, as it contains the cost shifters
 		  if(j == X.n_cols-2){             // if I'm at the price column
 			  //X_copy(i,j) = 0;         //initialize the price variable at 0
