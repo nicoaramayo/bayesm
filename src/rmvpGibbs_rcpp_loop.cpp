@@ -161,16 +161,17 @@ vec draww_mvop(vec const& w, vec const& mu, mat const& sigmai, ivec const& y){
 }
 
 
-vec price_sampler(vec const& sigma_s, vec const& price_s, vec const& fo_demand_s, vec const& demand_s,
+vec price_density(double sigma_s, vec const& price_s, vec const& fo_demand_s, vec const& demand_s,
 		  vec const& gamma, vec const& z_s, vec const& fo_cost_s){
-  //conditional density of price for bayesian simultaneous demand and supply estimation
+  //density of price for bayesian simultaneous demand and supply estimation
 
-  vec out_price = zeros<vec>(1);
+  vec out_price_density = zeros<vec>(1);
   double pi = 3.1415926;
 	
-  out_price = 1/(sqrt(2*pi*sigma_s))*exp(-1/(2*sigma_s)*(log(price_s + pow(fo_demand_s, -1)*demand_s)) - dot(gamma,z_s))*eps(fo_cost_s);
+  out_price_density = 1/(sqrt(2*pi*sigma_s))*exp(-1/(2*sigma_s)*(log(price_s + pow(fo_demand_s, -1)*demand_s))
+						 - dot(gamma,z_s))*eps(fo_cost_s);
 	
-  return (out_price);
+  return (out_price_density);
 }	
 
 vec expected_demand(vec const& beta, mat const& X, mat const& sigmai){
@@ -247,8 +248,7 @@ vec first_order_costshifter(vec const& beta, mat const& X, mat const& sigmai){
 		             (X(s, k-1) + pow(fo_demand[s], -1) * demand[s]);
   	}
   return (fo_costshifters);
-}
-	
+}	
 
 //MAIN FUNCTION---------------------------------------------------------------------------------------
 //[[Rcpp::export]]
@@ -258,11 +258,15 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
 
   int n = y.size()/p;
   int k = X.n_cols;
+  int z = 1; //set number of cost shifters manually
 	
   vec demand = zeros<vec>(p);
   vec fo_demand = zeros<vec>(p);
   vec so_demand = zeros<vec>(p);
   vec fo_cost = zeros<vec>(p);
+  //vec gamma = zeros<vec>(z);
+  vec gamma = 1;
+  double sigma_s = 1;
 	
   mat A_mod;  A_mod.eye(k-1,k-1)*0.01;  //edited for BSSD
   
@@ -288,7 +292,8 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   for(int i = 0; i < X_copy.n_rows; i++){
 	  for(int j = 0; j < X.n_cols-1; j++){     //do not go through the last column, as it contains the cost shifters
 		  if(j == X.n_cols-2){             // if I'm at the price column
-			  X_copy(i,j) = 0;         //initialize the price variable at 0
+			  //X_copy(i,j) = 0;         //initialize the price variable at 0
+			  X_copy(i,j) = X(i,j);
 		  } else{X_copy(i,j) = X(i,j);}
 	  }
   }
@@ -376,6 +381,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       fo_demand = first_order_demand(betanew, X_copy, sigmai);
       so_demand = second_order_demand(betanew, X_copy, sigmai);
       fo_cost = first_order_costshifter(betanew, X_copy, sigmai);
+      price_density = price_density(sigma_s, price, fo_demand, demand, gamma, cost_shifter, fo_cost);
       
       //print time to completion
       if (nprint>0) if ((rep+1)%nprint==0) infoMcmcTimer(rep, R);
