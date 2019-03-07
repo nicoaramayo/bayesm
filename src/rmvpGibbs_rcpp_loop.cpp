@@ -383,7 +383,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       so_demand = second_order_demand(betanew, X_copy, sigmai);
       fo_cost = first_order_costshifter(betanew, X_copy, sigmai);
       for(int s=0; s<p; s++){
-      	price_density[s] = price_density(sigma_s, price[s], fo_demand[s], demand[s], gamma, cost_shifter, fo_cost[s]);
+      	price_density[s] = price_density_s(sigma_s, price[s], fo_demand[s], demand[s], gamma, cost_shifter[s], fo_cost[s]);
       }
       
       //print time to completion
