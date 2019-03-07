@@ -265,8 +265,8 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   vec so_demand = zeros<vec>(p);
   vec fo_cost = zeros<vec>(p);
   //vec gamma = zeros<vec>(z);
-  vec gamma = 1;
-  double sigma_s = 1;
+  vec gamma = p/p;
+  double sigma_s = p/p;
   vec price_density = zeros<vec>(p);
 	
   mat A_mod;  A_mod.eye(k-1,k-1)*0.01;  //edited for BSSD
