@@ -161,11 +161,10 @@ vec draww_mvop(vec const& w, vec const& mu, mat const& sigmai, ivec const& y){
 }
 
 
-vec price_density_s(vec const& sigma_s, vec const& price_s, vec const& fo_demand_s, vec const& demand_s,
+vec price_density_s(int p, vec const& sigma_s, vec const& price_s, vec const& fo_demand_s, vec const& demand_s,
 		  vec const& gamma, vec const& z_s, vec const& fo_cost_s){
   //density of price for bayesian simultaneous demand and supply estimation
 
-  int p = price_s.n_cols;
   vec price_density = zeros<vec>(p);
   double pi = 3.1415926;
 
@@ -397,7 +396,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       fo_demand = first_order_demand(betanew, X_copy, sigmai);
       so_demand = second_order_demand(betanew, X_copy, sigmai);
       fo_cost = first_order_costshifter(betanew, X_copy, sigmai);
-      price_density = price_density_s(sigma_s, price, fo_demand, demand, gamma, cost_shifter, fo_cost);
+      price_density = price_density_s(p, sigma_s, price, fo_demand, demand, gamma, cost_shifter, fo_cost);
       
       //print time to completion
       if (nprint>0) if ((rep+1)%nprint==0) infoMcmcTimer(rep, R);
