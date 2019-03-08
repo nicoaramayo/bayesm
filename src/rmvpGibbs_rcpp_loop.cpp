@@ -358,10 +358,10 @@ double price_density_s(int s, vec const& beta, mat const& X, mat const& sigmai, 
   demand_s = expected_demand_s(s, beta, X, sigmai);
   fo_demand_s = first_order_demand_s(s, beta, X, sigmai);
   fo_costshifters_s = first_order_costshifter_s(s, beta, X, sigmai);
-  Rcout <<  price_s << ","; Rcout <<  demand_s << ","; Rcout <<  fo_demand_s << ","; Rcout <<  fo_costshifters_s << ";";
 	
   pprice_s = 1/(sqrt(2*pi*sigma_s[1]))*exp(-1/(2*sigma_s[1])*(log(price_s + pow(fo_demand_s, -1)*demand_s)
-					                  - gamma[1]*z_s[s]))*eps(fo_costshifters_s);	
+					                  - gamma[1]*z_s[s]))*eps(fo_costshifters_s);
+  Rcout <<  pprice_s << ";";
   return (pprice_s);
 }
 
@@ -373,20 +373,24 @@ mat rejection_price_sampler(int p, vec const& sigma_s, vec const& price_s,
 //mask = sample.u <= dnorm(sample.x, 1, 1)/dnorm(sample.x)
 //hist(sample.x[mask])
 	
-  vec sample_x;  sample_x.randn(10000); sample_x = sample_x*20000 + 50000;  // price range
-  vec sample_u;  sample_u.randu(10000); 
+  vec sample_x;  sample_x.randn(100); sample_x = sample_x*20000 + 50000;  // price range
+  vec sample_u;  sample_u.randu(100); 
   int M = 10;
   double pprice_s;
-  vec pnorm = zeros<vec>(10000);
-  for(int i = 0; i < 10000; i++){
+  vec pnorm = zeros<vec>(100);
+  for(int i = 0; i < 100; i++){
 	pnorm[i] = normal_density(sample_x[i], 0, 1);
   }
-  mat accept_mask = zeros<mat>(10000, 2*p); //contains on the left-side matrix the sampled prices and on the right-side the acceptance mask
+  mat accept_mask = zeros<mat>(100, 2*p); //contains on the left-side matrix the sampled prices and on the right-side the acceptance mask
   double condition;
+  k = X.n_cols; 
   
   for(int s = 0; s < p; s++){
 	  if(price_s[s] > 0){
-		  for(int i = 0; i < 10000; i++){
+		  for(int i = 0; i < p; i++){
+			  for(int j = 0; j < p; i++){
+				X(j,k) = sample_x[i];
+			  }
 			  pprice_s = price_density_s(s, beta, X, sigmai, sigma_s, sample_x[i], gamma, z_s);
 			  condition = pprice_s/(M*pnorm[i]);
 			  if(sample_u[i] <= condition){
@@ -394,7 +398,7 @@ mat rejection_price_sampler(int p, vec const& sigma_s, vec const& price_s,
 				  accept_mask(i,2*s) = 1;
 			  } else{accept_mask(i,s) = sample_x[i];}
 		  }
-	} else{for(int i = 0; i < 10000; i++){accept_mask(i,s) = sample_x[i];}}
+	} else{for(int i = 0; i < 100; i++){accept_mask(i,s) = sample_x[i];}}
   } return (accept_mask);
 }
 
