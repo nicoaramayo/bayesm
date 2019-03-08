@@ -170,8 +170,8 @@ vec price_density_s(vec const& sigma_s, vec const& price_s, vec const& fo_demand
   double pi = 3.1415926;
 	
   for(int s=0; s<p; s++){
-      	price_density[s] = 1/(sqrt(2*pi*sigma_s))*exp(-1/(2*sigma_s)*(log(price_s + pow(fo_demand_s, -1)*demand_s))
-						 - dot(gamma,z_s))*eps(fo_cost_s);
+      	price_density[s] = 1/(sqrt(2*pi*sigma_s))*exp(-1/(2*sigma_s)*(log(price_s[s] + pow(fo_demand_s[s], -1)*demand_s[s]))
+						 - dot(gamma,z_s))*eps(fo_cost_s[s]);
       }
 	
 	
