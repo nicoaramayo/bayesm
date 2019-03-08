@@ -171,8 +171,10 @@ vec price_density_s(int p, vec const& sigma_s, vec const& price_s, vec const& fo
   Rcout <<  sigma_s << ";";
   Rcout <<  sigma_s[1] << ";";
   for(int s=0; s<p; s++){
+	if(price_s[s] > 0){
 	price_density[s] = 1/(sqrt(2*pi*sigma_s[1]))*exp(-1/(2*sigma_s[1])*(log(price_s[s] + pow(fo_demand_s[s], -1)*demand_s[s])
 					                  - gamma[1]*z_s[s]))*eps(fo_cost_s[s]);
+	}
       	//price_density[s] = 1/(sqrt(2*pi*sigma_s[1]))*exp(-1/(2*sigma_s[1])*(log(price_s[s] + pow(fo_demand_s[s], -1)*demand_s[s]))
 	//					 - gamma*z_s[s])*eps(fo_cost_s[s]);
 						 //- dot(gamma,z_s[s]))*eps(fo_cost_s[s]);
@@ -260,7 +262,40 @@ vec first_order_costshifter(vec const& beta, mat const& X, mat const& sigmai){
 		             (X(s, k-1) + pow(fo_demand[s], -1) * demand[s]);
   	}
   return (fo_costshifters);
-}	
+}
+
+double uniform_density(double x, double up_lim, double low_lim){
+	double punif;
+	if(x <= up_lim && x >= low_lim){
+		punif = 1/(up_lim - low_lim);
+	}
+	else{punif = 0;}
+  return (punif);
+}
+
+mat rejection_price_sampler(int p, vec const& price_density, vec const& price_s){
+	
+//sample.x = rnorm(10000,0,1)
+//sample.u = runif(10000,0,1)
+//mask = sample.u <= dnorm(sample.x, 1, 1)/dnorm(sample.x)
+//hist(sample.x[mask])
+	
+  vec sample_x;  sample_x.randu(10000)*100000;  // price range
+  vec sample_u;  sample_u.randu(10000); 
+  mat accept_mask = zeros<mat>(10000, 2*p);
+  
+  for(int s = 0; s < p; s++){
+	  if(price_s[s] > 0){
+		  for(int i = 0; i < 10000; i++){
+			  if(sample_u <= price_density[s]/uniform_density(sample_x[i], 100000, 0)){
+				  accept_mask(i,s) = sample_x[i];
+				  accept_mask(i,2*s) = 1;
+			  }
+		  }
+	} else{accept_mask(i,s) = sample_x[i];}
+  } return (accept_mask);
+}
+
 
 //MAIN FUNCTION---------------------------------------------------------------------------------------
 //[[Rcpp::export]]
@@ -281,6 +316,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   //vec sigma_s = ones<vec>(1);
   vec sigma_s = zeros<vec>(1); sigma_s[1] = sigma_s[1] + 1;
   vec price_density = zeros<vec>(p);
+  mat sampled_prices_mask;
 	
   mat A_mod;  A_mod.eye(k-1,k-1)*0.01;  //edited for BSSD
   
@@ -401,6 +437,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       so_demand = second_order_demand(betanew, X_copy, sigmai);
       fo_cost = first_order_costshifter(betanew, X_copy, sigmai);
       price_density = price_density_s(p, sigma_s, price, fo_demand, demand, gamma, cost_shifter, fo_cost);
+      sampled_prices_mask = rejection_price_sampler(p, price_density, price);
       
       //print time to completion
       if (nprint>0) if ((rep+1)%nprint==0) infoMcmcTimer(rep, R);
@@ -438,6 +475,6 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
     Named("fo_demand") = fo_demand,
     Named("so_demand") = so_demand,
     Named("fo_cost") = fo_cost,
-    Named("price_density") = price_density);
-	
+    Named("price_density") = price_density),
+    Named("sampled_prices") = sampled_prices_mask);
 }
