@@ -345,7 +345,7 @@ double normal_density(double x, double mu, double sigma_2){
   return (pnorm);
 }
 
-double price_density_s(int s, vec const& beta, mat const& X, mat const& sigmai, vec const& sigma_s, vec const& price_s,
+double price_density_s(int s, vec const& beta, mat const& X, mat const& sigmai, vec const& sigma_s, double price_s,
 		  	vec const& gamma, vec const& z_s){
   //density of price for bayesian simultaneous demand and supply estimation
 
@@ -359,7 +359,7 @@ double price_density_s(int s, vec const& beta, mat const& X, mat const& sigmai, 
   fo_demand_s = first_order_demand_s(s, beta, X, sigmai);
   fo_costshifters_s = first_order_costshifter_s(s, beta, X, sigmai);
 	
-  pprice_s = 1/(sqrt(2*pi*sigma_s[1]))*exp(-1/(2*sigma_s[1])*(log(price_s[s] + pow(fo_demand_s, -1)*demand_s)
+  pprice_s = 1/(sqrt(2*pi*sigma_s[1]))*exp(-1/(2*sigma_s[1])*(log(price_s + pow(fo_demand_s, -1)*demand_s)
 					                  - gamma[1]*z_s[s]))*eps(fo_costshifters_s);	
   return (pprice_s);
 }
