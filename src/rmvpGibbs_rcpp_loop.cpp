@@ -168,11 +168,12 @@ vec price_density_s(vec const& sigma_s, vec const& price_s, vec const& fo_demand
   int p = price_s.n_cols;
   vec price_density = zeros<vec>(p);
   double pi = 3.1415926;
-	
+
+  Rcout <<  sigma_s << ";";
   for(int s=0; s<p; s++){
       	//price_density[s] = 1/(sqrt(2*pi*sigma_s))*exp(-1/(2*sigma_s)*(log(price_s[s] + pow(fo_demand_s[s], -1)*demand_s[s]))
 	//					 - dot(gamma,z_s))*eps(fo_cost_s[s]);
-	price_density[s] = 1/(sqrt(2*pi*sigma_s));
+	price_density[s] = 1/(sqrt(2*pi));
       }
 	
 	
