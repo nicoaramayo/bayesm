@@ -280,7 +280,7 @@ mat rejection_price_sampler(int p, vec const& price_density, vec const& price_s)
 //mask = sample.u <= dnorm(sample.x, 1, 1)/dnorm(sample.x)
 //hist(sample.x[mask])
 	
-  vec sample_x;  sample_x.randu(10000)*100000;  // price range
+  vec sample_x;  sample_x.randu(10000); sample_x = sample_x*100000;  // price range
   vec sample_u;  sample_u.randu(10000); 
   vec p_unif = zeros<vec>(10000);
   for(int i = 0; i < 10000; i++){
@@ -296,7 +296,7 @@ mat rejection_price_sampler(int p, vec const& price_density, vec const& price_s)
 			  if(sample_u[i] <= condition){
 				  accept_mask(i,s) = sample_x[i];
 				  accept_mask(i,2*s) = 1;
-			  }
+			  } else{accept_mask(i,s) = sample_x[i];}
 		  }
 	} else{for(int i = 0; i < 10000; i++){accept_mask(i,s) = sample_x[i];}}
   } return (accept_mask);
