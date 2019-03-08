@@ -358,6 +358,7 @@ double price_density_s(int s, vec const& beta, mat const& X, mat const& sigmai, 
   demand_s = expected_demand_s(s, beta, X, sigmai);
   fo_demand_s = first_order_demand_s(s, beta, X, sigmai);
   fo_costshifters_s = first_order_costshifter_s(s, beta, X, sigmai);
+  Rcout <<  price_s << ","; Rcout <<  demand_s << ","; Rcout <<  fo_demand_s << ","; Rcout <<  fo_costshifters_s << ";";
 	
   pprice_s = 1/(sqrt(2*pi*sigma_s[1]))*exp(-1/(2*sigma_s[1])*(log(price_s + pow(fo_demand_s, -1)*demand_s)
 					                  - gamma[1]*z_s[s]))*eps(fo_costshifters_s);	
@@ -387,7 +388,6 @@ mat rejection_price_sampler(int p, vec const& sigma_s, vec const& price_s,
 	  if(price_s[s] > 0){
 		  for(int i = 0; i < 10000; i++){
 			  pprice_s = price_density_s(s, beta, X, sigmai, sigma_s, sample_x[i], gamma, z_s);
-			  Rcout <<  sample_x[i] << ","; Rcout <<  pprice_s << ";"; 
 			  condition = pprice_s/(M*pnorm[i]);
 			  if(sample_u[i] <= condition){
 				  accept_mask(i,s) = sample_x[i];
