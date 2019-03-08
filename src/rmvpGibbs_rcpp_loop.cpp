@@ -537,7 +537,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       fo_demand = first_order_demand(betanew, X_copy, sigmai);
       so_demand = second_order_demand(betanew, X_copy, sigmai);
       fo_cost = first_order_costshifter(betanew, X_copy, sigmai);
-      price_density = price_density(p, sigma_s, price, fo_demand, demand, gamma, cost_shifter, fo_cost);
+      //price_density = price_density(p, sigma_s, price, fo_demand, demand, gamma, cost_shifter, fo_cost);
       sampled_prices_mask = rejection_price_sampler(p, sigma_s, price, gamma, cost_shifter, beta, X, sigmai);
       
       //print time to completion
