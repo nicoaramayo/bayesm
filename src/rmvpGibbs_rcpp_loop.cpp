@@ -383,7 +383,7 @@ mat rejection_price_sampler(int p, vec const& sigma_s, vec const& price_s,
   }
   mat accept_mask = zeros<mat>(100, 2*p); //contains on the left-side matrix the sampled prices and on the right-side the acceptance mask
   double condition;
-  k = X.n_cols; 
+  int k = X.n_cols; 
   
   for(int s = 0; s < p; s++){
 	  if(price_s[s] > 0){
