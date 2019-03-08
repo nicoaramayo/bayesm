@@ -168,9 +168,11 @@ vec price_density_s(int p, vec const& sigma_s, vec const& price_s, vec const& fo
   vec price_density = zeros<vec>(p);
   double pi = 3.1415926;
 
+  Rcout <<  sigma_s << ";";
   Rcout <<  sigma_s[1] << ";";
   for(int s=0; s<p; s++){
-	price_density[s] = 1/(sqrt(2*pi*sigma_s[1]))*exp(-1/(2*sigma_s[1])*(log(price_s[s] + pow(fo_demand_s[s], -1))));
+	price_density[s] = 1/(sqrt(2*pi*sigma_s[1]))*exp(-1/(2*sigma_s[1])*(log(price_s[s] + pow(fo_demand_s[s], -1)*demand_s[s])
+					                  - gamma[1]*z_s[s]))*eps(fo_cost_s[s]);
       	//price_density[s] = 1/(sqrt(2*pi*sigma_s[1]))*exp(-1/(2*sigma_s[1])*(log(price_s[s] + pow(fo_demand_s[s], -1)*demand_s[s]))
 	//					 - gamma*z_s[s])*eps(fo_cost_s[s]);
 						 //- dot(gamma,z_s[s]))*eps(fo_cost_s[s]);
@@ -275,9 +277,9 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   vec so_demand = zeros<vec>(p);
   vec fo_cost = zeros<vec>(p);
   //vec gamma = zeros<vec>(z);
-  vec gamma = ones<vec>(1);
+  vec gamma = zeros<vec>(1); gamma[1] = gamma[1] + 1;
   //vec sigma_s = ones<vec>(1);
-  vec sigma_s; sigma_s.ones(1);
+  vec sigma_s = zeros<vec>(1); sigma_s[1] = sigma_s[1] + 1;
   vec price_density = zeros<vec>(p);
 	
   mat A_mod;  A_mod.eye(k-1,k-1)*0.01;  //edited for BSSD
