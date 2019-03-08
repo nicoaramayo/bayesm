@@ -298,7 +298,7 @@ mat rejection_price_sampler(int p, vec const& price_density, vec const& price_s)
 				  accept_mask(i,2*s) = 1;
 			  }
 		  }
-	} else{for(int i = 0; i < 10000; i++){accept_mask(i,s) = sample_x[i];}
+	} else{for(int i = 0; i < 10000; i++){accept_mask(i,s) = sample_x[i];}}
   } return (accept_mask);
 }
 
