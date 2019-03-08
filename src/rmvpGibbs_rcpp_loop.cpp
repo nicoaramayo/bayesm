@@ -180,25 +180,6 @@ vec price_density(int p, vec const& sigma_s, vec const& price_s, vec const& fo_d
   return (price_density);
 }
 
-double price_density_s(int s, vec const& beta, mat const& X, mat const& sigmai, vec const& sigma_s, vec const& price_s,
-		  	vec const& gamma, vec const& z_s){
-  //density of price for bayesian simultaneous demand and supply estimation
-
-  double price_density_s;
-  double pi = 3.1415926;
-  double demand_s;
-  double fo_demand_s;
-  double fo_costshifters_s;
-	
-  demand_s = expected_demand_s(s, beta, X, sigmai);
-  fo_demand_s = first_order_demand_s(s, beta, X, sigmai);
-  fo_costshifters_s = first_order_costshifter_s(s, beta, X, sigmai);
-	
-  price_density_s = 1/(sqrt(2*pi*sigma_s[1]))*exp(-1/(2*sigma_s[1])*(log(price_s[s] + pow(fo_demand_s, -1)*demand_s)
-					                  - gamma[1]*z_s[s]))*eps(fo_costshifters_s);	
-  return (price_density_s);
-}
-
 vec expected_demand(vec const& beta, mat const& X, mat const& sigmai){
   //expected demand for the multivariate ordered probit
  
@@ -303,7 +284,6 @@ double second_order_demand_s(int s, vec const& beta, mat const& X, mat const& si
 	so_demand_s = so_demand_s - (pow(sigmai(s,s), 2) * 2 * sqrt(2/pi)*pow(beta(k-1), 2) * 
 			       exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s))) /
 			       pow(1 + exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)), 3);
-  	}
   }
   return (so_demand_s);
 }
@@ -364,6 +344,25 @@ double normal_density(double x, double mu, double sigma_2){
 	double pi = 3.1415926;
 	pnorm = 1/sqrt(2*pi*sigma_2)*exp(-pow((x-mu), 2)/(2*sigma_2));
   return (pnorm);
+}
+
+double price_density_s(int s, vec const& beta, mat const& X, mat const& sigmai, vec const& sigma_s, vec const& price_s,
+		  	vec const& gamma, vec const& z_s){
+  //density of price for bayesian simultaneous demand and supply estimation
+
+  double price_density_s;
+  double pi = 3.1415926;
+  double demand_s;
+  double fo_demand_s;
+  double fo_costshifters_s;
+	
+  demand_s = expected_demand_s(s, beta, X, sigmai);
+  fo_demand_s = first_order_demand_s(s, beta, X, sigmai);
+  fo_costshifters_s = first_order_costshifter_s(s, beta, X, sigmai);
+	
+  price_density_s = 1/(sqrt(2*pi*sigma_s[1]))*exp(-1/(2*sigma_s[1])*(log(price_s[s] + pow(fo_demand_s, -1)*demand_s)
+					                  - gamma[1]*z_s[s]))*eps(fo_costshifters_s);	
+  return (price_density_s);
 }
 
 mat rejection_price_sampler(int p, vec const& sigma_s,
