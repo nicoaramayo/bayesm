@@ -314,7 +314,6 @@ double first_order_costshifter_s(int s, vec const& beta, mat const& X, mat const
   //expected demand for the multivariate ordered probit
   // version without price interactions
 
-  int p = sigmai.n_cols;
   int k = beta.n_cols;
   double fo_costshifters_s;
   double demand_s;
@@ -350,7 +349,7 @@ double price_density_s(int s, vec const& beta, mat const& X, mat const& sigmai, 
 		  	vec const& gamma, vec const& z_s){
   //density of price for bayesian simultaneous demand and supply estimation
 
-  double price_density_s;
+  double pprice_s;
   double pi = 3.1415926;
   double demand_s;
   double fo_demand_s;
@@ -360,12 +359,12 @@ double price_density_s(int s, vec const& beta, mat const& X, mat const& sigmai, 
   fo_demand_s = first_order_demand_s(s, beta, X, sigmai);
   fo_costshifters_s = first_order_costshifter_s(s, beta, X, sigmai);
 	
-  price_density_s = 1/(sqrt(2*pi*sigma_s[1]))*exp(-1/(2*sigma_s[1])*(log(price_s[s] + pow(fo_demand_s, -1)*demand_s)
+  pprice_s = 1/(sqrt(2*pi*sigma_s[1]))*exp(-1/(2*sigma_s[1])*(log(price_s[s] + pow(fo_demand_s, -1)*demand_s)
 					                  - gamma[1]*z_s[s]))*eps(fo_costshifters_s);	
-  return (price_density_s);
+  return (pprice_s);
 }
 
-mat rejection_price_sampler(int p, vec const& sigma_s,
+mat rejection_price_sampler(int p, vec const& sigma_s, vec const& price_s,
 		  		vec const& gamma, vec const& z_s, vec const& beta, mat const& X, mat const& sigmai){
 	
 //sample.x = rnorm(10000,0,1)
@@ -376,7 +375,7 @@ mat rejection_price_sampler(int p, vec const& sigma_s,
   vec sample_x;  sample_x.randn(10000); sample_x = sample_x*20000 + 50000;  // price range
   vec sample_u;  sample_u.randu(10000); 
   int M = 10;
-  double price_density_s;
+  double pprice_s;
   vec pnorm = zeros<vec>(10000);
   for(int i = 0; i < 10000; i++){
 	pnorm[i] = normal_density(sample_x[i], 0, 1);
@@ -387,8 +386,8 @@ mat rejection_price_sampler(int p, vec const& sigma_s,
   for(int s = 0; s < p; s++){
 	  if(price_s[s] > 0){
 		  for(int i = 0; i < 10000; i++){
-			  price_density_s = price_density_s(s, beta, X, sigmai, sigma_s, sample_x[i], gamma, z_s);
-			  Rcout <<  sample_x[i] << ","; Rcout <<  price_density_s << ";"; 
+			  pprice_s = price_density_s(s, beta, X, sigmai, sigma_s, sample_x[i], gamma, z_s);
+			  Rcout <<  sample_x[i] << ","; Rcout <<  pprice_s << ";"; 
 			  condition = price_density_s/(M*pnorm[i]);
 			  if(sample_u[i] <= condition){
 				  accept_mask(i,s) = sample_x[i];
@@ -539,7 +538,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       so_demand = second_order_demand(betanew, X_copy, sigmai);
       fo_cost = first_order_costshifter(betanew, X_copy, sigmai);
       price_density = price_density(p, sigma_s, price, fo_demand, demand, gamma, cost_shifter, fo_cost);
-      sampled_prices_mask = rejection_price_sampler(p, sigma_s, gamma, cost_shifter, beta, X, sigmai);
+      sampled_prices_mask = rejection_price_sampler(p, sigma_s, price, gamma, cost_shifter, beta, X, sigmai);
       
       //print time to completion
       if (nprint>0) if ((rep+1)%nprint==0) infoMcmcTimer(rep, R);
