@@ -165,7 +165,7 @@ vec price_density_s(vec const& sigma_s, vec const& price_s, vec const& fo_demand
 		  vec const& gamma, vec const& z_s, vec const& fo_cost_s){
   //density of price for bayesian simultaneous demand and supply estimation
 
-  int p = sigmai.n_cols;
+  int p = price_s.n_cols;
   vec price_density = zeros<vec>(p);
   double pi = 3.1415926;
 	
