@@ -475,6 +475,6 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
     Named("fo_demand") = fo_demand,
     Named("so_demand") = so_demand,
     Named("fo_cost") = fo_cost,
-    Named("price_density") = price_density),
+    Named("price_density") = price_density,
     Named("sampled_prices") = sampled_prices_mask);
 }
