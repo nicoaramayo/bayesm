@@ -282,13 +282,17 @@ mat rejection_price_sampler(int p, vec const& price_density, vec const& price_s)
 	
   vec sample_x;  sample_x.randu(10000)*100000;  // price range
   vec sample_u;  sample_u.randu(10000); 
+  vec p_unif = zeros<vec>(10000);
+  for(int i = 0; i < 10000; i++){
+	p_unif[i] = uniform_density(sample_x[i], 100000, 0);
+  }
   mat accept_mask = zeros<mat>(10000, 2*p);
   double condition;
   
   for(int s = 0; s < p; s++){
 	  if(price_s[s] > 0){
 		  for(int i = 0; i < 10000; i++){
-			  condition = price_density[s]/uniform_density(sample_x[i], 100000, 0);
+			  condition = price_density[s]/p_unif[i];
 			  if(sample_u <= condition){
 				  accept_mask(i,s) = sample_x[i];
 				  accept_mask(i,2*s) = 1;
