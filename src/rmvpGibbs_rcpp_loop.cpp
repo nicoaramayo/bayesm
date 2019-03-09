@@ -381,6 +381,7 @@ mat rejection_price_sampler(int p, vec const& sigma_s, vec const& price_s,
 	
   for(int i = 0; i < 10000; i++){
 	  Rcout <<  pprice_s << ";";
+  }
   
   for(int s = 0; s < p; s++){
 	  if(price_s[s] > 0){
