@@ -375,7 +375,7 @@ mat rejection_price_sampler(int p, vec const& sigma_s, vec const& price_s,
 	
   vec sample_x;  sample_x.randn(100); sample_x = sample_x*20000 + 50000;  // price range
   vec sample_u;  sample_u.randu(100); 
-  int M = 10;
+  int M = 5;
   double pprice_s;
   vec pnorm = zeros<vec>(100);
   for(int i = 0; i < 100; i++){
@@ -388,8 +388,8 @@ mat rejection_price_sampler(int p, vec const& sigma_s, vec const& price_s,
   for(int s = 0; s < p; s++){
 	  if(price_s[s] > 0){
 		  for(int i = 0; i < p; i++){
-			  for(int j = 0; j < p; i++){
-				X(j,k) = sample_x[i];
+			  for(int j = 0; j < p; j++){
+				X(s*p + j,k) = sample_x[i];
 			  }
 			  pprice_s = price_density_s(s, beta, X, sigmai, sigma_s, sample_x[i], gamma, z_s);
 			  condition = pprice_s/(M*pnorm[i]);
