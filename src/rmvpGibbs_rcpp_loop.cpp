@@ -390,7 +390,9 @@ mat rejection_price_sampler(int p, vec const& sigma_s, vec const& price_s,
 		  for(int i = 0; i < 10000; i++){
 			  for(int j = 0; j < n_students; j++){
 				X(s*p + j,k-1) = sample_x[i];   //replace in X the sampled price for school s
-			  } if (i % 10 == 0){Rcout <<  pprice_s << ",";}
+			  } 
+			  pprice_s = price_density_s(s, beta, X, sigmai, sigma_s, i, gamma, z_s);
+			  if (i % 10 == 0){Rcout <<  pprice_s << ",";}
 			  pprice_s = price_density_s(s, beta, X, sigmai, sigma_s, sample_x[i], gamma, z_s);
 			  //Rcout <<  pprice_s << ","; Rcout <<  pnorm[i] << ";";
 			  condition = pprice_s/(M*pnorm[i]);
