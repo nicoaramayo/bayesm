@@ -368,28 +368,23 @@ double price_density_s(int s, vec const& beta, mat const& X, mat const& sigmai, 
 mat rejection_price_sampler(int p, vec const& sigma_s, vec const& price_s,
 		  		vec const& gamma, vec const& z_s, vec const& beta, mat X, mat const& sigmai){
 	
-//sample.x = rnorm(10000,0,1)
-//sample.u = runif(10000,0,1)
-//mask = sample.u <= dnorm(sample.x, 1, 1)/dnorm(sample.x)
-//hist(sample.x[mask])
-	
-  vec sample_x;  sample_x.randn(100); sample_x = sample_x*20000 + 50000;  // price range
-  vec sample_u;  sample_u.randu(100); 
+  vec sample_x;  sample_x.randn(10000); sample_x = sample_x*20000 + 50000;  // price range
+  vec sample_u;  sample_u.randu(10000); 
   int M = 5;
   double pprice_s;
-  vec pnorm = zeros<vec>(100);
-  for(int i = 0; i < 100; i++){
+  vec pnorm = zeros<vec>(10000);
+  for(int i = 0; i < 10000; i++){
 	pnorm[i] = normal_density(sample_x[i], 0, 1);
   }
-  mat accept_mask = zeros<mat>(100, 2*p); //contains on the left-side matrix the sampled prices and on the right-side the acceptance mask
+  mat accept_mask = zeros<mat>(10000, 2*p); //contains on the left-side matrix the sampled prices and on the right-side the acceptance mask
   double condition;
   int k = X.n_cols; 
   
   for(int s = 0; s < p; s++){
 	  if(price_s[s] > 0){
-		  for(int i = 0; i < p; i++){
+		  for(int i = 0; i < 10000; i++){
 			  for(int j = 0; j < p; j++){
-				X(s*p + j,k) = sample_x[i];
+				X(s*p + j,k-1) = sample_x[i];
 			  }
 			  pprice_s = price_density_s(s, beta, X, sigmai, sigma_s, sample_x[i], gamma, z_s);
 			  condition = pprice_s/(M*pnorm[i]);
@@ -398,7 +393,7 @@ mat rejection_price_sampler(int p, vec const& sigma_s, vec const& price_s,
 				  accept_mask(i,2*s) = 1;
 			  } else{accept_mask(i,s) = sample_x[i];}
 		  }
-	} else{for(int i = 0; i < 100; i++){accept_mask(i,s) = sample_x[i];}}
+	} else{for(int i = 0; i < 10000; i++){accept_mask(i,s) = sample_x[i];}}
   } return (accept_mask);
 }
 
