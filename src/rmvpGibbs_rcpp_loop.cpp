@@ -367,8 +367,8 @@ double price_density_s(int s, vec const& beta, mat const& X, mat const& sigmai, 
 mat rejection_price_sampler(int p, vec const& sigma_s, vec const& price_s,
 		  		vec const& gamma, vec const& z_s, vec const& beta, mat X, mat const& sigmai){
 	
-  vec sample_x;
-  vec sample_u;
+  vec sample_x; sample_x.randn(10000); sample_x = sample_x*20000 + 50000;  // price range
+  vec sample_u; sample_u.randu(10000);
   int M = 10;
   double pprice_s;
   vec pnorm = zeros<vec>(10000);
@@ -384,8 +384,8 @@ mat rejection_price_sampler(int p, vec const& sigma_s, vec const& price_s,
 			  //Rcout <<  pprice_s << ";";
   
   for(int s = 0; s < p; s++){
-	  sample_x.randn(10000); sample_x = sample_x*20000 + 50000;  // price range
-	  sample_u.randu(10000);
+	  //sample_x.randn(10000); sample_x = sample_x*20000 + 50000;  // price range
+	  //sample_u.randu(10000);
 	  if(price_s[s] > 0){
 		  for(int i = 0; i < 10000; i++){
 			  for(int j = 0; j < n_students; j++){
