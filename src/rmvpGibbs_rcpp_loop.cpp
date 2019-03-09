@@ -388,7 +388,8 @@ mat rejection_price_sampler(int p, vec const& sigma_s, vec const& price_s,
 			  for(int j = 0; j < p; j++){
 				X(s*p + j,k-1) = sample_x[i];
 			  }
-			  Rcout <<  price_density_s(s, beta, X, sigmai, sigma_s, i, gamma, z_s) << ";";
+			  pprice_s = price_density_s(s, beta, X, sigmai, sigma_s, i, gamma, z_s);
+			  Rcout <<  pprice_s << ";";
 			  pprice_s = price_density_s(s, beta, X, sigmai, sigma_s, sample_x[i], gamma, z_s);
 			  condition = pprice_s/(M*pnorm[i]);
 			  if(sample_u[i] <= condition){
