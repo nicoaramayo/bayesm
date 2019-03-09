@@ -367,13 +367,13 @@ double price_density_s(int s, vec const& beta, mat const& X, mat const& sigmai, 
 mat rejection_price_sampler(int p, vec const& sigma_s, vec const& price_s,
 		  		vec const& gamma, vec const& z_s, vec const& beta, mat X, mat const& sigmai){
 	
-  vec sample_x; sample_x.randn(10000); sample_x = sample_x*20000 + 50000;  // price range
+  vec sample_x; sample_x.randn(10000); sample_x = sample_x*10000 + 30000;  // price range
   vec sample_u; sample_u.randu(10000);
   int M = 100;
   double pprice_s;
   vec pnorm = zeros<vec>(10000);
   for(int i = 0; i < 10000; i++){
-	pnorm[i] = normal_density(sample_x[i], 50000, 20000);
+	pnorm[i] = normal_density(sample_x[i], 30000, 10000);
   }
   mat accept_mask = zeros<mat>(10000, 2*p); //contains on the left-side matrix the sampled prices and on the right-side the acceptance mask
   double condition;
@@ -390,9 +390,10 @@ mat rejection_price_sampler(int p, vec const& sigma_s, vec const& price_s,
 		  for(int i = 0; i < 10000; i++){
 			  for(int j = 0; j < n_students; j++){
 				X(s*p + j,k-1) = sample_x[i];   //replace in X the sampled price for school s
-			  } 
-			  pprice_s = price_density_s(s, beta, X, sigmai, sigma_s, i, gamma, z_s);
-			  if (i % 10 == 0){Rcout <<  pprice_s << ",";}
+			  }
+			  if(s == 33){
+			  	pprice_s = price_density_s(s, beta, X, sigmai, sigma_s, i*10, gamma, z_s);
+			  	Rcout <<  pprice_s << ",";}
 			  pprice_s = price_density_s(s, beta, X, sigmai, sigma_s, sample_x[i], gamma, z_s);
 			  //Rcout <<  pprice_s << ","; Rcout <<  pnorm[i] << ";";
 			  condition = pprice_s/(M*pnorm[i]);
