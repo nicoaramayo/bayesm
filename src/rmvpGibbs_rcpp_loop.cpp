@@ -366,7 +366,7 @@ double price_density_s(int s, vec const& beta, mat const& X, mat const& sigmai, 
 }
 
 mat rejection_price_sampler(int p, vec const& sigma_s, vec const& price_s,
-		  		vec const& gamma, vec const& z_s, vec const& beta, mat const& X, mat const& sigmai){
+		  		vec const& gamma, vec const& z_s, vec const& beta, mat X, mat const& sigmai){
 	
 //sample.x = rnorm(10000,0,1)
 //sample.u = runif(10000,0,1)
