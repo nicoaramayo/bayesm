@@ -4,22 +4,6 @@
 
 //EXTRA FUNCTIONS SPECIFIC TO THE MAIN FUNCTION--------------------------------------------
 
-void print_double_in_C(double beta) {  
-    Rcout <<  beta << ";";
-}
-
-void print_vec_in_C(vec beta) {  
-    Rcout <<  beta << ";";
-}
-
-void print_int_in_C(int beta) {  
-    Rcout <<  beta << ";";
-}
-
-void print_line_in_C() {  
-    Rcout <<  endl;
-}
-
 double rtrunSc(double mu, double sigma, double a, double b){
   
 // N. Aramayo  
@@ -170,21 +154,21 @@ vec draww_mvop(vec const& w, vec const& mu, mat const& sigmai, ivec const& y){
 }
 
 
-vec price_density(int p, vec const& sigma_s, vec const& price_s, vec const& fo_demand_s, vec const& demand_s,
-		              vec const& gamma, vec const& z_s, vec const& fo_cost_s){
+//vec price_density(int p, vec const& sigma_s, vec const& price_s, vec const& fo_demand_s, vec const& demand_s,
+//		              vec const& gamma, vec const& z_s, vec const& fo_cost_s){
   //density of price for bayesian simultaneous demand and supply estimation
   //NOT BEING USED AT THE MOMENT
 
-  vec price_density = zeros<vec>(p);
-  double pi = 3.1415926;
+//  vec price_density = zeros<vec>(p);
+//  double pi = 3.1415926;
 
-  for(int s=0; s<p; s++){
-	if(price_s[s] > 0){
-	price_density[s] = 1/(sqrt(2*pi*sigma_s[0]))*exp(-1/(2*sigma_s[0])*(log(price_s[s] + pow(fo_demand_s[s], -1)*demand_s[s])
-					                  - gamma[0]*z_s[s]))*eps(fo_cost_s[s]);
-	}
- } return (price_density);
-}
+//  for(int s=0; s<p; s++){
+//	if(price_s[s] > 0){
+//	price_density[s] = 1/(sqrt(2*pi*sigma_s[0]))*exp(-1/(2*sigma_s[0])*(log(price_s[s] + pow(fo_demand_s[s], -1)*demand_s[s])
+//					                  - gamma[0]*z_s[s]))*eps(fo_cost_s[s]);
+//	}
+// } return (price_density);
+//}
 
 vec expected_demand(vec const& beta, mat const& X, mat const& sigmai){
   //expected demand for the multivariate ordered probit
@@ -223,7 +207,9 @@ double expected_demand_s(int s, vec const& beta, mat const& X, mat const& sigmai
   return (demand_s);
 }
 
-vec first_order_demand(vec const& beta, mat const& X, mat const& sigmai, int n_price_interactions){
+vec first_order_demand(vec const& beta, mat const& X, mat const& sigmai,
+                       vec const& pri, vec const& pie, vec const& lvl,
+                       int n_price_interactions){
   //expected demand for the multivariate ordered probit
   
   int p = sigmai.n_cols;
@@ -231,19 +217,23 @@ vec first_order_demand(vec const& beta, mat const& X, mat const& sigmai, int n_p
   vec fo_demand = zeros<vec>(p);
   double pi = 3.1415926;
   int n_students = int(X.n_rows/p);
+  vec interactions = zeros<vec>(n_price_interactions);
 
   for(int s = 0; s < p; s++){
   	for(int i = 0; i < n_students; i++){
+  	  interactions[0] = pri[i*p + s];
+  	  interactions[1] = pie[i*p + s];
+  	  interactions[2] = lvl[i*p + s];
   	  fo_demand[s] = fo_demand[s] + (exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)) * 
   	                 2 * sqrt(2/pi) * (1/sigmai(s,s)) * (beta(k-n_price_interactions-1) +
-					           dot(beta.subvec(k-n_price_interactions,k-1),
-                     X.row(i*p + s).subvec(k-n_price_interactions,k-1)))) /
+					           dot(beta.subvec(k-n_price_interactions,k-1), interactions))) /
 			               pow(1 + exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)), 2);
   	}
   } return (fo_demand);
 }
 
 double first_order_demand_s(int s, vec const& beta, mat const& X, mat const& sigmai,
+                            vec const& pri, vec const& pie, vec const& lvl,
                             int n_price_interactions){
   //expected demand for the multivariate ordered probit
   
@@ -252,17 +242,22 @@ double first_order_demand_s(int s, vec const& beta, mat const& X, mat const& sig
   double fo_demand_s = 0;
   double pi = 3.1415926;
   int n_students = int(X.n_rows/p);
+  vec interactions = zeros<vec>(n_price_interactions);
 	
   for(int i = 0; i < n_students; i++){
+    interactions[0] = pri[i*p + s];
+    interactions[1] = pie[i*p + s];
+    interactions[2] = lvl[i*p + s];
   	fo_demand_s = fo_demand_s + (exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)) * 
   	              2 * sqrt(2/pi) * (1/sigmai(s,s)) * (beta(k-n_price_interactions-1) +
-  					      dot(beta.subvec(k-n_price_interactions,k-1),
-                  X.row(i*p + s).subvec(k-n_price_interactions,k-1)))) /
+  					      dot(beta.subvec(k-n_price_interactions,k-1), interactions))) /
   			          pow(1 + exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)), 2);
   } return (fo_demand_s);
 }
 
-vec second_order_demand(vec const& beta, mat const& X, mat const& sigmai, int n_price_interactions){
+vec second_order_demand(vec const& beta, mat const& X, mat const& sigmai,
+                        vec const& pri, vec const& pie, vec const& lvl,
+                        int n_price_interactions){
   //expected demand for the multivariate ordered probit
 
   int p = sigmai.n_cols;
@@ -270,13 +265,16 @@ vec second_order_demand(vec const& beta, mat const& X, mat const& sigmai, int n_
   vec so_demand = zeros<vec>(p);
   double pi = 3.1415926;
   int n_students = int(X.n_rows/p);
+  vec interactions = zeros<vec>(n_price_interactions);
 	
   for(int s = 0; s < p; s++){
   	for(int i = 0; i < n_students; i++){
+  	  interactions[0] = pri[i*p + s];
+  	  interactions[1] = pie[i*p + s];
+  	  interactions[2] = lvl[i*p + s];
   	  so_demand[s] = so_demand[s] - (pow(2, 2) * pow(sqrt(2/pi), 2) * pow(sigmai(s,s), -2) *
                 	   pow(beta(k-n_price_interactions-1) +
-                	   dot(beta.subvec(k-n_price_interactions,k-1),
-                     X.row(i*p + s).subvec(k-n_price_interactions,k-1)), 2) *
+                	   dot(beta.subvec(k-n_price_interactions,k-1), interactions), 2) *
                      exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)) *
                      (exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)) - 1)) *
                      pow(1 + exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)), -3);
@@ -286,6 +284,7 @@ vec second_order_demand(vec const& beta, mat const& X, mat const& sigmai, int n_
 }
 
 double second_order_demand_s(int s, vec const& beta, mat const& X, mat const& sigmai,
+                             vec const& pri, vec const& pie, vec const& lvl,
                              int n_price_interactions){
   //expected demand for the multivariate ordered probit
 
@@ -294,12 +293,15 @@ double second_order_demand_s(int s, vec const& beta, mat const& X, mat const& si
   double so_demand_s = 0;
   double pi = 3.1415926;
   int n_students = int(X.n_rows/p);
+  vec interactions = zeros<vec>(n_price_interactions);
 	
   for(int i = 0; i < n_students; i++){
+    interactions[0] = pri[i*p + s];
+    interactions[1] = pie[i*p + s];
+    interactions[2] = lvl[i*p + s];
     so_demand_s = so_demand_s - (pow(2, 2) * pow(sqrt(2/pi), 2) * pow(sigmai(s,s), -2) *
                   pow(beta(k-n_price_interactions-1) +
-                  dot(beta.subvec(k-n_price_interactions,k-1),
-                  X.row(i*p + s).subvec(k-n_price_interactions,k-1)), 2) *
+                  dot(beta.subvec(k-n_price_interactions,k-1), interactions), 2) *
                   exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)) *
                   (exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)) - 1)) *
                   pow(1 + exp(2*sqrt(2/pi)*dot(beta,X.row(i*p + s))/sigmai(s,s)), -3);
@@ -307,7 +309,9 @@ double second_order_demand_s(int s, vec const& beta, mat const& X, mat const& si
   return (so_demand_s);
 }
 
-vec first_order_costshifter(vec const& beta, mat const& X, mat const& sigmai, int n_price_interactions){
+vec first_order_costshifter(vec const& beta, mat const& X, mat const& sigmai,
+                            vec const& pri, vec const& pie, vec const& lvl,
+                            int n_price_interactions){
   //expected demand for the multivariate ordered probit
 
   int p = sigmai.n_cols;
@@ -318,8 +322,8 @@ vec first_order_costshifter(vec const& beta, mat const& X, mat const& sigmai, in
   vec so_demand = zeros<vec>(p);
 	
   demand = expected_demand(beta, X, sigmai);
-  fo_demand = first_order_demand(beta, X, sigmai, n_price_interactions);
-  so_demand = second_order_demand(beta, X, sigmai, n_price_interactions);
+  fo_demand = first_order_demand(beta, X, sigmai, pri, pie, lvl, n_price_interactions);
+  so_demand = second_order_demand(beta, X, sigmai, pri, pie, lvl, n_price_interactions);
 
   for(int s = 0; s < p; s++){
 	fo_costshifters[s] = (2 - pow(fo_demand[s], -2) * so_demand[s] * demand[s]) /
@@ -329,6 +333,7 @@ vec first_order_costshifter(vec const& beta, mat const& X, mat const& sigmai, in
 }
 
 double first_order_costshifter_s(int s, vec const& beta, mat const& X, mat const& sigmai,
+                                 vec const& pri, vec const& pie, vec const& lvl,
                                  int n_price_interactions){
   //expected demand for the multivariate ordered probit
 
@@ -339,8 +344,8 @@ double first_order_costshifter_s(int s, vec const& beta, mat const& X, mat const
   double so_demand_s = 0;
 	
   demand_s = expected_demand_s(s, beta, X, sigmai);
-  fo_demand_s = first_order_demand_s(s, beta, X, sigmai, n_price_interactions);
-  so_demand_s = second_order_demand_s(s, beta, X, sigmai, n_price_interactions);
+  fo_demand_s = first_order_demand_s(s, beta, X, sigmai, pri, pie, lvl, n_price_interactions);
+  so_demand_s = second_order_demand_s(s, beta, X, sigmai, pri, pie, lvl, n_price_interactions);
 
   fo_costshifters_s = (2 - pow(fo_demand_s, -2) * so_demand_s * demand_s) /
 		                  (X(s, k-1) + pow(fo_demand_s, -1) * demand_s);
@@ -389,6 +394,7 @@ double one_exponential_sample(double lambda){
 
 double price_density_s(int s, vec const& beta, mat const& X, mat const& sigmai, vec const& sigma_s,
                        double price_s, vec const& gamma, vec const& z_s,
+                       vec const& pri, vec const& pie, vec const& lvl,
                        int n_price_interactions){
   //density of price for bayesian simultaneous demand and supply estimation
 
@@ -399,8 +405,8 @@ double price_density_s(int s, vec const& beta, mat const& X, mat const& sigmai, 
   double fo_costshifters_s = 0;
 	
   demand_s = expected_demand_s(s, beta, X, sigmai);
-  fo_demand_s = first_order_demand_s(s, beta, X, sigmai, n_price_interactions);
-  fo_costshifters_s = first_order_costshifter_s(s, beta, X, sigmai, n_price_interactions);
+  fo_demand_s = first_order_demand_s(s, beta, X, sigmai, pri, pie, lvl, n_price_interactions);
+  fo_costshifters_s = first_order_costshifter_s(s, beta, X, sigmai, pri, pie, lvl, n_price_interactions);
   
 	
   pprice_s = double(1)/(sqrt(2*pi*sigma_s[0]))*exp(-1/(2*sigma_s[0])*
@@ -412,14 +418,15 @@ double price_density_s(int s, vec const& beta, mat const& X, mat const& sigmai, 
 
 mat rejection_price_sampler(int p, vec const& sigma_s, vec const& price_s,
 		  		vec const& gamma, vec const& z_s, vec const& beta, 
-		  		mat X, mat const& sigmai, int n_price_interactions){
+		  		mat X, mat const& sigmai, int n_price_interactions,
+		  		vec const& pri, vec const& pie, vec const& lvl){
 	
-	const int n_samples = 50000;
+	const int n_samples = 1000;
   //vec sample_x; sample_x.randn(n_samples); sample_x = sample_x*5000 + 1000;  // price range
-  double lambda = 0.000005;
+  double lambda = 0.000001;
   vec sample_x = zeros<vec>(n_samples);
   vec sample_u; sample_u.randu(n_samples);
-  int M = .5;
+  double M = 2;
   double pprice_s = 0;
   vec pexp = zeros<vec>(n_samples);
   vec price_samples = zeros<vec>(n_samples);
@@ -438,61 +445,61 @@ mat rejection_price_sampler(int p, vec const& sigma_s, vec const& price_s,
   for(int s = 0; s < p; s++){
     //THIS FOR LOOP IS FOR OBTAINING THE IMAGE SET OF THE PRICE DENSITY FUNCTION FOR EACH SCHOOL
     if(price_s[s] > 0){
-      precio = 0;
+      Rcout << "....calculando para el colegio " << s << endl;
+      precio = 1000;
       for(int a = 0; a < n_samples; a++){
         for(int j = 0; j < n_students; j++){
           X(j*p + s,k-n_price_interactions-1) = precio;
-          X(j*p + s,k-n_price_interactions) = precio;
-          X(j*p + s,k-n_price_interactions+1) = precio;
-          X(j*p + s,k-n_price_interactions+2) = precio;
+          X(j*p + s,k-n_price_interactions) = precio * pri[j*p + s];
+          X(j*p + s,k-n_price_interactions+1) = precio * pie[j*p + s];
+          X(j*p + s,k-n_price_interactions+2) = precio * lvl[j*p + s];
         }
-        density = price_density_s(s, beta, X, sigmai, sigma_s, X(s*p,k-n_price_interactions-1),
-                                  gamma, z_s, n_price_interactions);
+        density = price_density_s(s, beta, X, sigmai, sigma_s, precio,
+                                  gamma, z_s, pri, pie, lvl, n_price_interactions);
         domain(a,s) = precio;
         domain(a,s+p) = density;
         domain(a,s+2*p) = expected_demand_s(s, beta, X, sigmai);
-        domain(a,s+3*p) = first_order_demand_s(s, beta, X, sigmai, n_price_interactions);
-        domain(a,s+4*p) = second_order_demand_s(s, beta, X, sigmai, n_price_interactions);
-        precio = precio + 10;
+        domain(a,s+3*p) = first_order_demand_s(s, beta, X, sigmai, pri, pie, lvl, n_price_interactions);
+        domain(a,s+4*p) = second_order_demand_s(s, beta, X, sigmai, pri, pie, lvl, n_price_interactions);
+        precio = precio + 1000;
       }
-    }
-    
-	  if(price_s[s] > 0){
-	    sample_x = exponential_sample(lambda, n_samples);
-	    error_counter = 0;
+    } 
+  } return (domain);
+	  //if(price_s[s] > 0){
+	    //sample_x = exponential_sample(lambda, n_samples);
+	    //error_counter = 0;
 	    
-		  for(int i = 0; i < n_samples; i++){
+		  //for(int i = 0; i < n_samples; i++){
 		    
-			  for(int j = 0; j < n_students; j++){
-				  X(s*p + j,k-1) = sample_x[i];   //replace in X the sampled price for school s
-			  }
+			  //for(int j = 0; j < n_students; j++){
+				  //X(s*p + j,k-1) = sample_x[i];   //replace in X the sampled price for school s
+			  //}
 			  
-			  pexp[i] = exponential_density(sample_x[i], lambda);
-			  pprice_s = price_density_s(s, beta, X, sigmai, sigma_s, sample_x[i], gamma, z_s, n_price_interactions);
-			  if(M*pexp[i] < pprice_s){
-			    error_counter = error_counter + 1;
-			    }
-			  condition = pprice_s/(M*pexp[i]);
+			  //pexp[i] = exponential_density(sample_x[i], lambda);
+			  //pprice_s = price_density_s(s, beta, X, sigmai, sigma_s, sample_x[i], gamma, z_s, n_price_interactions);
+			  //if(M*pexp[i] < pprice_s){
+			    //error_counter = error_counter + 1;
+			    //}
+			  //condition = pprice_s/(M*pexp[i]);
 			  
-			  if(sample_u[i] <= condition){
-				  accept_mask(i,s) = sample_x[i];
-				  accept_mask(i,s + p) = 1;
-			  } else{accept_mask(i,s) = sample_x[i];}
-		  } Rcout << "School: " << s << " Wrong samples: " << double(error_counter)/n_samples*100 << "%" << endl;
-	  } //else{for(int i = 0; i < n_samples; i++){accept_mask(i,s) = sample_x[i];}}
-  } //return (accept_mask);
-  return (domain);
+			  //if(sample_u[i] <= condition){
+				  //accept_mask(i,s) = sample_x[i];
+				  //accept_mask(i,s + p) = 1;
+			  //} else{accept_mask(i,s) = sample_x[i];}
+		  //} Rcout << "School: " << s << " Wrong samples: " << double(error_counter)/n_samples*100 << "%" << endl;
+	  //} //else{for(int i = 0; i < n_samples; i++){accept_mask(i,s) = sample_x[i];}}
+  //} //return (accept_mask);
 }
 
 vec sample_prices(int p, vec const& sigma_s, vec const& price_s,
                   vec const& gamma, vec const& z_s, vec const& beta, mat X, mat const& sigmai, 
-                  int n_price_interactions){
+                  int n_price_interactions, vec const& pri, vec const& pie, vec const& lvl){
   
-  double lambda = 0.000005;                  //exponential dist rate
+  double lambda = 0.00001;                  //exponential dist rate
   double sample_x = 0;                     //price samples from rejection sampling
   const int n_samples = 1;
   vec sample_u; sample_u.randu(n_samples);  //uniform (0,1) samples
-  int M = .5;
+  double M = 2;
   double pprice_s = 0;                     //price density
   double pexp = 0;                         //instrumental density
   vec price_samples = zeros<vec>(p);       // accepted sampled prices
@@ -507,46 +514,36 @@ vec sample_prices(int p, vec const& sigma_s, vec const& price_s,
   
   for(int s = 0; s < p; s++){
     if(price_s[s] > 0){
-      sample_x = one_exponential_sample(lambda);
-      error_counter = 0;
-      sample_u.randu(n_samples);
       
-        //for(int j = 0; j < n_students; j++){
-        //  X(j*p + s,k-n_price_interactions-1) = sample_x;
-        //  X(j*p + s,k-n_price_interactions) = sample_x;
-        //  X(j*p + s,k-n_price_interactions+1) = sample_x;
-        //  X(j*p + s,k-n_price_interactions+2) = sample_x;
-        //}
+      do{
+        sample_x = one_exponential_sample(lambda);
+        sample_u.randu(n_samples);
         
-        pexp = exponential_density(sample_x, lambda);
-        pprice_s = price_density_s(s, beta, X, sigmai, sigma_s, sample_x, gamma, z_s, n_price_interactions);
-        condition[0] = pprice_s/(M*pexp);
-        arma_rng::set_seed(sample_u[0]);
-
-        while(sample_u[0] > condition[0]){
-          sample_x = one_exponential_sample(lambda);
-          pexp = exponential_density(sample_x, lambda);
-          pprice_s = price_density_s(s, beta, X, sigmai, sigma_s, sample_x, gamma, z_s, n_price_interactions);
-          condition[0] = pprice_s/(M*pexp);
-          sample_u.randu(n_samples);
-          arma_rng::set_seed(sample_u[0]);
-          
-          error_counter = error_counter + 1;
-          
-          if(error_counter%500 == 0){
-            Rcout << "llevas " << error_counter << " samples rechazados para el colegio " << s << endl;
-            Rcout << "price is= " << sample_x << " and the target density= " << pprice_s << " and instrumental density = " << M*pexp << endl;
-          }
-          
-          if(pprice_s > M*pexp){
-            Rcout << "warning: instrumental density is below the target density for school: " << s << endl;
-            Rcout << "price is= " << sample_x << " and the target density= " << pprice_s << " and instrumental density = " << M*pexp << endl;
-          }
+        for(int j = 0; j < n_students; j++){
+          X(j*p + s,k-n_price_interactions-1) = sample_x;
+          X(j*p + s,k-n_price_interactions) = sample_x * pri[j*p + s];
+          X(j*p + s,k-n_price_interactions+1) = sample_x * pie[j*p + s];
+          X(j*p + s,k-n_price_interactions+2) = sample_x * lvl[j*p + s];
         }
         
-        price_samples[s] = sample_x;
-        
+        pexp = exponential_density(sample_x, lambda);
+        pprice_s = price_density_s(s, beta, X, sigmai, sigma_s, sample_x, gamma, z_s,
+                                   pri, pie, lvl, n_price_interactions);
+        condition[0] = pprice_s/(M*pexp);
+        arma_rng::set_seed(sample_u[0]);
+        error_counter = error_counter + 1;
+        if(error_counter%100 == 0){
+          Rcout << "llevas " << error_counter << " samples rechazados para el colegio " << s << endl;
+          Rcout << "price is= " << sample_x << " and the target density= " << pprice_s << " and instrumental density = " << M*pexp << endl;
+        }
+      }while (sample_u[0] > condition[0]);
+
+      if(pprice_s > M*pexp){
+        Rcout << "warning: instrumental density is below the target density for school: " << s << endl;
+        Rcout << "price is= " << sample_x << " and the target density= " << pprice_s << " and instrumental density = " << M*pexp << endl;
       }
+      price_samples[s] = sample_x;
+    }
   } return (price_samples);
 }
 
@@ -565,7 +562,7 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
   vec fo_demand = zeros<vec>(p);
   vec so_demand = zeros<vec>(p);
   vec fo_cost = zeros<vec>(p);
-  vec gamma = zeros<vec>(n_cost_shifters); gamma[0] = gamma[0] - 1;    //EDITAR ESTO CUANDO HAYAN MÁS COST SHIFTERS
+  vec gamma = zeros<vec>(n_cost_shifters); gamma[0] = gamma[0] - 0.5293939;    //EDITAR ESTO CUANDO HAYAN MÁS COST SHIFTERS
   vec sigma_s = zeros<vec>(1); sigma_s[0] = sigma_s[0] + 1;
   vec price_density = zeros<vec>(p);
   mat sampled_prices_mask;
@@ -699,7 +696,8 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       C = as<mat>(W["C"]); //conversion from Rcpp to Armadillo requires explict declaration of variable type using as<>
 	    
       //price_density = price_density(p, sigma_s, price, fo_demand, demand, gamma, cost_shifter, fo_cost);
-      sampled_prices = sample_prices(p, sigma_s, price, gamma, cost_shifter, betanew, X_copy, sigmai, n_price_interactions);
+      sampled_prices = sample_prices(p, sigma_s, price, gamma, cost_shifter, betanew, X_copy, sigmai,
+                                     n_price_interactions, pri, pie, lvl);
       
       for(int s = 0; s < p; s++){
         if(sampled_prices[s] > 0){
@@ -713,9 +711,9 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       }
       
       demand = expected_demand(betanew, X_copy, sigmai);
-      fo_demand = first_order_demand(betanew, X_copy, sigmai, n_price_interactions);
-      so_demand = second_order_demand(betanew, X_copy, sigmai, n_price_interactions);
-      fo_cost = first_order_costshifter(betanew, X_copy, sigmai, n_price_interactions);
+      fo_demand = first_order_demand(betanew, X_copy, sigmai, pri, pie, lvl, n_price_interactions);
+      so_demand = second_order_demand(betanew, X_copy, sigmai, pri, pie, lvl, n_price_interactions);
+      fo_cost = first_order_costshifter(betanew, X_copy, sigmai, pri, pie, lvl, n_price_interactions);
       
       //print time to completion
       if (nprint>0) if ((rep+1)%nprint==0) infoMcmcTimer(rep, R);
@@ -733,7 +731,8 @@ List rmvpGibbs_rcpp_loop(int R, int keep, int nprint, int p,
       betaold = betanew;
     }
     
-  //sampled_prices_mask = rejection_price_sampler(p, sigma_s, price, gamma, cost_shifter, betanew, X_copy, sigmai, n_price_interactions);
+  sampled_prices_mask = rejection_price_sampler(p, sigma_s, price, gamma, cost_shifter, betanew,
+                                                X_copy, sigmai, n_price_interactions, pri, pie, lvl);
   
   if(nprint>0) endMcmcTimer();
       
